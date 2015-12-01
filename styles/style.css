@@ -6,9 +6,13 @@
 /*
   General Page Styling
 */
-html
+*
 {
   font-family:'Helvetica',Sans-serif;
+  font-size:12px;
+}
+body
+{
   line-height: 18px;
   word-wrap:break-word;
 }
@@ -24,8 +28,8 @@ img
 {
   width:auto;
   height:auto;
-  max-width:300px;
-  max-height:300px;
+  max-width:200px;
+  max-height:200px;
   float:left;
   clear:left;
   margin:20px;
@@ -35,10 +39,16 @@ img
 article
 {
   float:left;
+  margin:20px;
 }
 p
 {
   text-indent:20px;
+}
+footer
+{
+  text-align:center;
+  margin:40px;
 }
 /*
   BlogArticles.js Body Content Styling
@@ -58,25 +68,25 @@ img.pull-right
 */
 .article-title
 {
-  font-size:16px;
+  font-size:18px;
 }
 .article-author
 {
-  font-size:12px;
+  font-size:10px;
 }
 .article-category
 {
-  font-size:12px;
+  font-size:10px;
 }
 .article-published-date
 {
-  font-size:12px;
+  font-size:10px;
 }
 .article-content
 {
-  font-size:14px;
 }
 .article-meta-information
 {
   line-height: 16px;
+  margin:5px;
 }
