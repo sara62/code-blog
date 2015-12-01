@@ -1,12 +1,55 @@
-var Article = function(props){
+var Article = function(props,container){
   this.author = props.author;
   this.authorUrl = props.authorUrl;
   this.title = props.title;
-  this.body = props.body;
+  this.content = props.body;
   this.publishedOn = props.publishedOn;
   this.category = props.category;
+  this.DOM = container;
 };
-
+Article.prototype.toHTML = function()
+{
+  var container = this.DOM;
+  $(container).find('.article-title h2').text(this.title);
+  $(container).find('.article-author a').attr('href',this.authorUrl).text(this.author);
+  $(container).find('.article-content').html(this.content);
+  $(container).find('.article-category span').text('Category: '+this.category);
+  var publishedDaysPassed = this.getPublishedDaysPast();
+  var publicationInformation = $(container).find('.article-published-date span');
+  if(publishedDaysPassed==1)
+  {
+    publicationInformation.first().text('Published yesterday, ');
+  }
+  if(publishedDaysPassed==0)
+  {
+    publicationInformation.first().text('Published today, ');
+  }
+  if(publishedDaysPassed>1)
+  {
+    publicationInformation.first().text('Published on ');
+  }
+  if(publishedDaysPassed<0)
+  {
+    publicationInformation.first().text('An article from the future, published on ');
+  }
+  var timeTag = $('<time></time>').attr('datetime',this.publishedOn).text(this.publishedOn);
+  publicationInformation.first().append(timeTag);
+  if(publishedDaysPassed>1)
+  {
+    publicationInformation.last().text(', '+publishedDaysPassed+' days ago...');
+  } else {
+    publicationInformation.last().remove();
+  }
+  return container;
+};
+Article.prototype.getPublishedDaysPast = function()
+{
+  var currentDate = new Date();
+  var publishedDate = new Date(this.publishedOn);
+  var daysPassed = Math.floor((currentDate.getTime() - publishedDate.getTime())/((3600*1000)*24)); //divided by 1 day in milliseconds.
+  return daysPassed;
+};
+/*
 Article.prototype.toHTML = function()
 {
   var publishedDaysPassed = this.getPublishedDaysPast();
@@ -32,13 +75,4 @@ Article.prototype.toHTML = function()
   '</article>';
   return htmlOutput;
 };
-
-Article.prototype.getPublishedDaysPast = function()
-{
-  var currentDate = new Date();
-  var publishedDate = new Date(this.publishedOn); //creates a date object which is one day ahead of the reported date of publication listed in the blogArticles.js array.  Not sure why yet... :(
-  var dayInMilliseconds = (3600*1000)*24; //1 day in milliseconds.
-  var timePassed = currentDate - publishedDate - (3600*1000)*24; //minus one extra day to make it work right, cause... I donno why it drops a day.
-  var daysPassed = Math.floor(timePassed/dayInMilliseconds);
-  return daysPassed;
-};
+*/
