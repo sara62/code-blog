@@ -1,3 +1,82 @@
 /*
-  CSS Styling for the Blog
+  CSS Styling for the Course Blog
+  Author: James Mason
+  Date: 11/30/15
 */
+/*
+  General Page Styling
+*/
+html
+{
+  font-family:'Helvetica',Sans-serif;
+  line-height: 18px;
+  word-wrap:break-word;
+}
+section
+{
+  width:90%;
+  max-width:800px;
+  min-width:300px;
+  margin:0 auto;
+  padding:5px;
+}
+img
+{
+  width:auto;
+  height:auto;
+  max-width:300px;
+  max-height:300px;
+  float:left;
+  clear:left;
+  margin:20px;
+  border:solid black 1px;
+  box-shadow:5px 5px 5px #000000;
+}
+article
+{
+  float:left;
+}
+p
+{
+  text-indent:20px;
+}
+/*
+  BlogArticles.js Body Content Styling
+*/
+img.pull-left
+{
+  float:left;
+  clear:left;
+}
+img.pull-right
+{
+  float:right;
+  clear:right;
+}
+/*
+  Article Styling
+*/
+.article-title
+{
+  font-size:16px;
+}
+.article-author
+{
+  font-size:12px;
+}
+.article-category
+{
+  font-size:12px;
+}
+.article-published-date
+{
+  font-size:12px;
+}
+.article-content
+{
+  font-size:14px;
+}
+.article-meta-information
+{
+  line-height: 16px;
+}
