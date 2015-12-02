@@ -9,6 +9,19 @@
 	font-family: 'Helvetica',Sans-serif;
 	font-size: 12px;
 }
+#site-title {
+	text-align:center;
+	font-weight:bold;
+	padding:25px;
+}
+nav div ul li {
+	display:inline;
+	padding:5px;
+}
+nav div {
+	margin:5px;
+	text-align:center;
+}
 body {
 	line-height: 18px;
 	word-wrap: break-word;
@@ -36,6 +49,7 @@ img {
 article {
 	float: left;
 	margin: 20px;
+	padding:20px;
 }
 p {
 	text-indent: 20px;
@@ -44,6 +58,13 @@ footer {
 	text-align: center;
 	padding-bottom: 50px;
 	padding-top: 50px;
+	width:100%;
+}
+.section-container
+{
+	float:left;
+	clear:left;
+	width:100%;
 }
 /* BlogArticles.js Styling */
 img.pull-left {
@@ -58,14 +79,21 @@ img.pull-right {
 .article-title {
 	font-size: 18px;
 }
-.article-author ,
-.article-category ,
-.article-published-date {
-	font-size: 10px;
-}
-.article-content {
-}
 .article-meta-information {
 	line-height: 16px;
 	margin: 5px;
+	font-size: 10px;
+}
+/* Basic Page Styling */
+.basic-title {
+	font-size: 18px;
+	margin-bottom:20px;
+}
+/* Reference Page Styling */
+.reference-title {
+	font-size: 18px;
+	margin-bottom:20px;
+}
+.link-items {
+	margin-top:10px;
 }

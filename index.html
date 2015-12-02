@@ -6,29 +6,60 @@
     <link rel="stylesheet" type="text/css" href="styles/lib/normalize-3.0.2.css">
     <link rel="stylesheet" type="text/css" href="styles/style.css">
     <script src="scripts/lib/jquery-1.11.3.min.js"></script>
-    <script src="scripts/article.js"></script>
-    <script src="scripts/blog.js"></script>
-    <script src="scripts/blogArticles.js"></script>
+    <script src="scripts/utils.js"></script>
     <script src="scripts/index.js"></script>
   </head>
   <body>
     <section>
-      <header>
-        <h1><a href="https://twitter.com/JM92254866" target="_blank" class="social">My</a> Code Blog</h1>
-        <nav>
-          <aside></aside>
-        </nav>
-      </header>
-      <main>
-        <article>
-          <div class="article-title"><h2></h2></div>
-          <div class="article-author article-meta-information"><span></span><a href="" target="_blank" rel="author"></a></div>
-          <div class="article-category article-meta-information"><span></span></div>
-          <div class="article-published-date article-meta-information"><span></span><span></span></div>
-          <div class="article-content"></div>
-        </article>
-      </main>
-      <footer>&copy; James Mason 2015</footer>
+      <div class="section-container">
+        <header>
+          <h1 id="site-title">CODE BLOG</h1>
+          <nav>
+            <div>
+              <ul>
+                <li data-nav="articles"><a href="#site-title">Articles</a></li>
+                <li data-nav="about"><a href="#site-title">About</a></li>
+                <li data-nav="links"><a href="#site-title">Links</a></li>
+              </ul>
+            </div>
+            <div>
+              <ul class="social">
+                <li><a href="https://twitter.com/JM92254866" target="_blank">Twitter</a></li>
+                <li><a href="https://github.com/jhm90/" target="_blank">Github</a></li>
+              </ul>
+            </div>
+            <aside></aside>
+          </nav>
+        </header>
+      </div>
+      <div class="section-container">
+        <main>
+          <article id="article-basic-template">
+            <div class="article-title"><h2></h2></div>
+            <div class="article-meta-information">
+              <div class="article-author"><span></span><a href="" target="_blank" rel="author"></a></div>
+              <div class="article-category"><span></span></div>
+              <div class="article-published-date"><span></span><span></span></div>
+            </div>
+            <div class="article-content"></div>
+            <a href="#" class="read-more">Continue reading...</a>
+          </article>
+          <article id="basic-template">
+            <div class="basic-title"><h2></h2></div>
+            <div class="basic-content"></div>
+          </article>
+          <article id="reference-template">
+            <div class="reference-title"><h2></h2></div>
+            <div class="reference-content"></div>
+            <div class="link-items">
+              <div class="link-item"><span></span><a href="#" target="_blank"></a></div>
+            </div>
+          </article>
+        </main>
+      </div>
+      <div class="section-container">
+        <footer>&copy; James Mason 2015</footer>
+      </div>
     </section>
   </body>
 </html>
