@@ -203,22 +203,30 @@ $(function(){
   var linksDOM = links.getDOM();
   //Add the pages to the site, then hide everything.
   $(site.container).append(blogDOM);
-  //$(site.container).append(aboutDOM);
-  //$(site.container).append(linksDOM);
+  $(site.container).append(aboutDOM);
+  $(site.container).append(linksDOM);
+  $(blogDOM).hide();
+  $(aboutDOM).hide();
+  $(linksDOM).hide();
   //Finally, set-up the navigation events.
   $('nav div ul li').each(function() {
     $(this).on('click',function() {
       var page = $(this).data('nav');
       if(page === 'articles')
       {
-        site.removeArticles();
-        blog.printArticlesToHTML();
+        $(blogDOM).find('article p:not(:first-child)').hide();
+        $(blogDOM).find('.read-more').show();
+        $(blogDOM).fadeIn(500);
+        $(aboutDOM).hide();
+        $(linksDOM).hide();
       } else if (page === 'about') {
-        site.removeArticles();
-        about.printPageToHTML();
+        $(blogDOM).hide();
+        $(aboutDOM).fadeIn(500);
+        $(linksDOM).hide();
       } else if (page === 'links') {
-        site.removeArticles();
-        links.printPageToHTML();
+        $(blogDOM).hide();
+        $(aboutDOM).hide();
+        $(linksDOM).fadeIn(500);
       }
     });
   });

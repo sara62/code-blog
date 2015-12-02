@@ -62,24 +62,19 @@ Blog.prototype.parseArticleData = function(template) {
   });
   this.articles = array;
 
-  this.DOM = $('<div id="articles"></div>');
-  $('main').append(this.DOM);
+  var blogDOM = $('<div id="articles"></div>');
   $.each(this.articles,function(index,value){
-    $('main').find('#articles').append($(value.toHTML()));
+    blogDOM.append($(value.toHTML()));
   });
-  alert($(this.DOM).toSource());
-  $('main').append($(this.DOM));
-
-};
-Blog.prototype.getDOM = function() {
-  return this.DOM;
-};
-Blog.prototype.showArticleExcerpts = function() {
-  $(this.DOM).find('article p:not(:first-child)').hide();
-  $('main').on('click','.read-more',function() {
+  blogDOM.find('article p:not(:first-child)').hide();
+  this.DOM = blogDOM;
+  $(this.container).on('click','.read-more',function() {
     $(this).parent().find('.article-content p').fadeIn(1000);
     $(this).hide();
   });
+};
+Blog.prototype.getDOM = function() {
+  return this.DOM;
 };
 /*
   The Site Object
