@@ -1,3 +1,71 @@
 /*
-  CSS Styling for the Blog
+  Code Blog Styling
+  Author: James Mason
+  Date: 11/30/15
+  Notes: 'http://cssmaximizer.appspot.com/'' was utilized to add vendor prefixes and minify the document slightly.
 */
+/* General Styling */
+* {
+	font-family: 'Helvetica',Sans-serif;
+	font-size: 12px;
+}
+body {
+	line-height: 18px;
+	word-wrap: break-word;
+}
+section {
+	width: 90%;
+	max-width: 800px;
+	min-width: 300px;
+	margin: 0 auto;
+	padding: 5px;
+}
+img {
+	width: auto;
+	height: auto;
+	max-width: 200px;
+	max-height: 200px;
+	float: left;
+	clear: left;
+	margin: 20px;
+	border: solid black 1px;
+	box-shadow: 5px 5px 5px #000000;
+	-moz-box-shadow: 5px 5px 5px #000000;
+	-webkit-box-shadow: 5px 5px 5px #000000;
+}
+article {
+	float: left;
+	margin: 20px;
+}
+p {
+	text-indent: 20px;
+}
+footer {
+	text-align: center;
+	padding-bottom: 50px;
+	padding-top: 50px;
+}
+/* BlogArticles.js Styling */
+img.pull-left {
+	float: left;
+	clear: left;
+}
+img.pull-right {
+	float: right;
+	clear: right;
+}
+/* Article Styling */
+.article-title {
+	font-size: 18px;
+}
+.article-author ,
+.article-category ,
+.article-published-date {
+	font-size: 10px;
+}
+.article-content {
+}
+.article-meta-information {
+	line-height: 16px;
+	margin: 5px;
+}
