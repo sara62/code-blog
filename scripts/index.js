@@ -213,10 +213,10 @@ $(function(){
   $(linksDOM).hide();
   //Finally, set-up the navigation events.
   $('#site-title').on('click',function(){
-    $(blogFiltersDOM).hide();
-    $(blogDOM).hide();
-    $(aboutDOM).hide();
-    $(linksDOM).hide();
+    $(blogFiltersDOM).fadeOut(250);
+    $(blogDOM).fadeOut(250);
+    $(aboutDOM).fadeOut(250);
+    $(linksDOM).fadeOut(250);
   });
   $('nav div ul li').each(function() {
     $(this).on('click',function() {

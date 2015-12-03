@@ -13,8 +13,7 @@ var Article = function(props,container,index){
   this.publishedDate = new Date(this.publishedOn);
   this.id = index;
 };
-Article.prototype.toHTML = function()
-{
+Article.prototype.toHTML = function() {
   $(this.DOM).attr('id',('article-'+this.id));
   $(this.DOM).find('.article-title h2').text(this.title);
   $(this.DOM).find('.article-author a').attr('href',this.authorUrl).text(this.author);
@@ -38,8 +37,7 @@ Article.prototype.toHTML = function()
   $(this.DOM).find('.read-more').attr('href',('#article-'+this.id));
   return this.DOM;
 };
-Article.prototype.getPublishedDaysPast = function()
-{
+Article.prototype.getPublishedDaysPast = function() {
   return Math.floor((this.currentDate.getTime() - this.publishedDate.getTime())/((3600*1000)*24));
 };
 /*
@@ -57,8 +55,7 @@ var Blog = function() {
 Blog.prototype.setBlogContainer = function(blogContainer) {
   this.container = blogContainer;
 };
-Blog.prototype.parseFilterData = function(template)
-{
+Blog.prototype.parseFilterData = function(template) {
   var filterContainer = template;
   this.filterDOM = filterContainer.find('#article-filters');
   template.find('#article-filters').remove();
@@ -204,7 +201,7 @@ Page.prototype.setPageContainer = function(pageContainer) {
   this.container = pageContainer;
 };
 Page.prototype.setPageTemplate = function(pageTemplate,pageType) {
-  this.DOM = pageTemplate;
+  this.DOM = $('<div class="page"></div>').append(pageTemplate);
   this.type = pageType;
 };
 Page.prototype.parsePageData = function() {
@@ -217,12 +214,12 @@ Page.prototype.parsePageData = function() {
   }
   if(this.type === 'Basic Page') {
     //For Basic Pages
-    $(this.DOM).attr('id',(this.title + '-page'));
+    $(this.DOM).find('article').attr('id',(this.title + '-page'));
     $(this.DOM).find('.basic-title h2').text(this.title);
     $(this.DOM).find('.basic-content').html(this.content);
   } else if (this.type === 'Reference Page') {
     //For Reference Pages
-    $(this.DOM).attr('id',(this.title + '-page'));
+    $(this.DOM).find('article').attr('id',(this.title + '-page'));
     $(this.DOM).find('.reference-title h2').text(this.title);
     $(this.DOM).find('.reference-content').html(this.content);
     var linkItems = $(this.DOM).find('.link-item');

@@ -117,10 +117,9 @@ article a:hover
 {
 	color:#272F21;
 }
-.read-more{
-	position:relative;
-	top:-20px;
-	left:20px;
+.page {
+	width:90%;
+	margin:0 auto;
 }
 /* BlogArticles.js Styling */
 img.pull-left {
@@ -134,6 +133,9 @@ img.pull-right {
 /* Article Styling */
 #article-filters {
 	padding-top:20px;
+}
+.filter-select {
+	margin-top:10px;
 }
 .article-title {
 	font-size: 18px;
@@ -149,32 +151,29 @@ img.pull-right {
 	font-size: 10px;
 	padding:20px 20px 0px 20px;
 }
-/* Basic Page Styling */
-.basic-page {
-	width:90%;
-	margin:0 auto;
-	padding:20px;
-	float:none;!important;
-	clear:none;!important;
+.read-more{
+	position:relative;
+	top:-20px;
+	left:20px;
 }
+/* Basic Page Styling */
 .basic-title {
 	font-size: 18px;
-	margin-bottom:20px;
+	padding:20px 20px 0px 20px;
+}
+.basic-content {
+	padding:20px 20px 20px 20px;
 }
 /* Reference Page Styling */
-.reference-page {
-	width:90%;
-	margin:0 auto;
-	padding:20px;
-	float:none;!important;
-	clear:none;!important;
-}
 .reference-title {
 	font-size: 18px;
-	margin-bottom:20px;
+	padding:20px 20px 0px 20px;
+}
+.reference-content {
+	padding:20px 20px 0px 20px;
 }
 .link-items {
-	margin-top:10px;
+	padding:20px 20px 20px 20px;
 }
 /* Social Icons */
 .social li

@@ -8,7 +8,8 @@
     <link rel="stylesheet" type="text/css" href="styles/lib/normalize-3.0.2.css">
     <link href="https://file.myfontastic.com/n6vo44Re5QaWo8oCKShBs7/icons.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles/style.css">
-    <script src="scripts/lib/jquery-1.11.3.min.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
     <script src="scripts/utils.js"></script>
     <script src="scripts/objects.js"></script>
     <script src="scripts/index.js"></script>
@@ -72,5 +73,10 @@
     <section>
       <footer>&copy; James Mason 2015</footer>
     </section>
+    <script>
+      var compile = function(template,expressions) {
+        return appTemplate
+      };
+    </script>
   </body>
 </html>
