@@ -10,23 +10,24 @@
     <link rel="stylesheet" type="text/css" href="styles/style.css">
     <script src="scripts/lib/jquery-1.11.3.min.js"></script>
     <script src="scripts/utils.js"></script>
+    <script src="scripts/objects.js"></script>
     <script src="scripts/index.js"></script>
   </head>
   <body>
     <section>
       <header>
-        <h1 id="site-title">CODE BLOG</h1>
+        <h1 id="site-title"><a href="#">CODE BLOG</a></h1>
         <nav>
           <div>
             <ul>
-              <li data-nav="articles"><a href="#site-title">Articles</a></li>
-              <li data-nav="about"><a href="#site-title">About</a></li>
-              <li data-nav="links"><a href="#site-title">Links</a></li>
+              <li data-nav="articles"><a href="#article-filters">Articles</a></li>
+              <li data-nav="about"><a href="#about-page">About</a></li>
+              <li data-nav="links"><a href="#links-page">Links</a></li>
             </ul>
           </div>
           <div>
             <ul class="social">
-              <!-- <li><a href="https://twitter.com/JM92254866" target="_blank" class="icon socicon-twitter"></a></li> -->
+              <li><a href="https://twitter.com/JM92254866" target="_blank" class="icon socicon-twitter"></a></li>
               <li><a href="https://github.com/jhm90/" target="_blank" class="icon socicon-github"></a></li>
             </ul>
           </div>
@@ -45,6 +46,15 @@
           </div>
           <div class="article-content"></div>
           <a href="#" class="read-more">Continue reading...</a>
+          <div id="article-filters">
+            <ul>
+              <li class="filter">
+                <select class="filter-select">
+                  <option class="filter-option"></option>
+                </select>
+              <li>
+            </ul>
+          </div>
         </article>
         <article id="basic-template" class="basic-page">
           <div class="basic-title"><h2></h2></div>

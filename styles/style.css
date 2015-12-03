@@ -24,6 +24,12 @@ header {
 	padding-top:25px;
 	color:#C4D0BB;
 }
+#site-title a {
+	color:#C4D0BB;
+}
+#site-title a:hover {
+	color:#A9A9A9;
+}
 nav div ul li {
 	display:inline;
 	padding:5px;
@@ -126,6 +132,9 @@ img.pull-right {
 	clear: right;
 }
 /* Article Styling */
+#article-filters {
+	padding-top:20px;
+}
 .article-title {
 	font-size: 18px;
 	padding:20px 20px 0px 20px;

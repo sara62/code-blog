@@ -179,6 +179,7 @@ $(function(){
   blog.setBlogContainer(site.container);
   blog.parseArticleData(site.templates['article-basic-template']);
   var blogDOM = blog.getDOM();
+  var blogFiltersDOM = blog.getFiltersDOM();
   //Define the About page.
   var about = new Page();
   about.rawData = [{
@@ -202,33 +203,44 @@ $(function(){
   links.parsePageData();
   var linksDOM = links.getDOM();
   //Add the pages to the site, then hide everything.
+  $('nav div').last().append(blogFiltersDOM);
   $(site.container).append(blogDOM);
   $(site.container).append(aboutDOM);
   $(site.container).append(linksDOM);
+  $(blogFiltersDOM).hide();
   $(blogDOM).hide();
   $(aboutDOM).hide();
   $(linksDOM).hide();
   //Finally, set-up the navigation events.
+  $('#site-title').on('click',function(){
+    $(blogFiltersDOM).hide();
+    $(blogDOM).hide();
+    $(aboutDOM).hide();
+    $(linksDOM).hide();
+  });
   $('nav div ul li').each(function() {
     $(this).on('click',function() {
       var page = $(this).data('nav');
       if(page === 'articles')
       {
+        blog.resetFilters();
+        $(blogFiltersDOM).fadeIn(500);
         $(blogDOM).find('article p:not(:first-child)').hide();
         $(blogDOM).find('.read-more').show();
         $(blogDOM).fadeIn(500);
         $(aboutDOM).hide();
         $(linksDOM).hide();
       } else if (page === 'about') {
+        $(blogFiltersDOM).hide();
         $(blogDOM).hide();
         $(aboutDOM).fadeIn(500);
         $(linksDOM).hide();
       } else if (page === 'links') {
+        $(blogFiltersDOM).hide();
         $(blogDOM).hide();
         $(aboutDOM).hide();
         $(linksDOM).fadeIn(500);
       }
     });
   });
-
 });
