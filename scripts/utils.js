@@ -17,3 +17,6 @@ Utilities.prototype.uniqueArray = function(array) {
   });
   return output;
 };
+Utilities.prototype.arrayAlert = function(array) {
+  alert(JSON.stringify(array));
+};

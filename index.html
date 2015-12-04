@@ -6,7 +6,6 @@
     <title>A Code Blog</title>
     <link rel="stylesheet" type="text/css" href="styles/lib/reset.css">
     <link rel="stylesheet" type="text/css" href="styles/lib/normalize-3.0.2.css">
-    <link href="https://file.myfontastic.com/n6vo44Re5QaWo8oCKShBs7/icons.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="styles/style.css">
     <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
@@ -18,22 +17,31 @@
     <section>
       <header>
         <h1 id="site-title"><a href="#">CODE BLOG</a></h1>
-        <nav>
-          <div>
-            <ul>
-              <li data-nav="articles"><a href="#article-filters">Articles</a></li>
-              <li data-nav="about"><a href="#about-page">About</a></li>
-              <li data-nav="links"><a href="#links-page">Links</a></li>
-            </ul>
+        <div id="navigation">
+          <!--
+          <div id="mobile-menu">
+            <a href="#mobile">
+              <img class="hamburger-menu" src="images/icons/hamburger-icon.svg" width="48" height="48" alt="Mobile Menu" />
+              <nav>
+                <div>
+                  <ul>
+                    <li data-nav=""><a href="#"></a></li>
+                  </ul>
+                </div>
+              </nav>
+            </a>
           </div>
-          <div>
-            <ul class="social">
-              <li><a href="https://twitter.com/JM92254866" target="_blank" class="icon socicon-twitter"></a></li>
-              <li><a href="https://github.com/jhm90/" target="_blank" class="icon socicon-github"></a></li>
-            </ul>
+          -->
+          <div id="desktop-menu">
+            <nav>
+              <div class="site-menu">
+                <ul>
+                  <li class="nav-link-item"><a href="#"></a></li>
+                </ul>
+              </div>
+            </nav>
           </div>
-          <aside></aside>
-        </nav>
+        </div>
       </header>
     </section>
     <section>
@@ -73,10 +81,5 @@
     <section>
       <footer>&copy; James Mason 2015</footer>
     </section>
-    <script>
-      var compile = function(template,expressions) {
-        return appTemplate
-      };
-    </script>
   </body>
 </html>

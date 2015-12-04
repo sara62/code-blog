@@ -1,11 +1,8 @@
 $(function(){
-  //Begin by defining the main container the site will utilize.  This is the container which holds generic page templates.
-  var site = new Site($('main'));
-  site.loadTemplates();
-  site.removeArticles();
-  //Define the Articles page.
-  var blog = new Blog();
-  blog.rawData = [
+  var site = new Site($('main'),$('#site-title'));
+  var socialData = [{title:'github',url:'https://github.com/jhm90/',srcUrl:'images/icons/Octocat.png'}];
+  var pages = [];
+  var blogData = [
     {
       title:       'Bacon Ipsum',
       category:    'food',
@@ -176,71 +173,21 @@ $(function(){
 
     },
   ];
-  blog.setBlogContainer(site.container);
-  blog.parseArticleData(site.templates['article-basic-template']);
-  var blogDOM = blog.getDOM();
-  var blogFiltersDOM = blog.getFiltersDOM();
-  //Define the About page.
-  var about = new Page();
-  about.rawData = [{
+  var blog = new Blog('articles',site.container,blogData,site.templates['article-basic-template']);
+  pages.push(blog);
+  var aboutData =  [{
     title:      'About',
     content:    '<p>Hello, my name is James.  This is my Code Blog.</p>'
   }];
-  about.setPageContainer(site.container);
-  about.setPageTemplate(site.templates['basic-template'],'Basic Page');
-  about.parsePageData();
-  var aboutDOM = about.getDOM();
-  //Define the Links page.
-  var links = new Page();
-  links.rawData = [{
+  var about = new Page('about',site.container,aboutData,site.templates['basic-template'],'Basic Page');
+  pages.push(about);
+  var linksData = [{
     title:      'Links',
     content:    'The following links are useful things from Code 301.  Enjoy.',
     linkTitles: ['jQuery Data Method','jQuery On Method','The jQuery Method'],
     linkUrls: ['https://api.jquery.com/data/','https://api.jquery.com/on/','https://api.jquery.com/jQuery/']
   }];
-  links.setPageContainer(site.container);
-  links.setPageTemplate(site.templates['reference-template'],'Reference Page');
-  links.parsePageData();
-  var linksDOM = links.getDOM();
-  //Add the pages to the site, then hide everything.
-  $('nav div').last().append(blogFiltersDOM);
-  $(site.container).append(blogDOM);
-  $(site.container).append(aboutDOM);
-  $(site.container).append(linksDOM);
-  $(blogFiltersDOM).hide();
-  $(blogDOM).hide();
-  $(aboutDOM).hide();
-  $(linksDOM).hide();
-  //Finally, set-up the navigation events.
-  $('#site-title').on('click',function(){
-    $(blogFiltersDOM).fadeOut(250);
-    $(blogDOM).fadeOut(250);
-    $(aboutDOM).fadeOut(250);
-    $(linksDOM).fadeOut(250);
-  });
-  $('nav div ul li').each(function() {
-    $(this).on('click',function() {
-      var page = $(this).data('nav');
-      if(page === 'articles')
-      {
-        blog.resetFilters();
-        $(blogFiltersDOM).fadeIn(500);
-        $(blogDOM).find('article p:not(:first-child)').hide();
-        $(blogDOM).find('.read-more').show();
-        $(blogDOM).fadeIn(500);
-        $(aboutDOM).hide();
-        $(linksDOM).hide();
-      } else if (page === 'about') {
-        $(blogFiltersDOM).hide();
-        $(blogDOM).hide();
-        $(aboutDOM).fadeIn(500);
-        $(linksDOM).hide();
-      } else if (page === 'links') {
-        $(blogFiltersDOM).hide();
-        $(blogDOM).hide();
-        $(aboutDOM).hide();
-        $(linksDOM).fadeIn(500);
-      }
-    });
-  });
+  var links = new Page('links',site.container,linksData,site.templates['reference-template'],'Reference Page');
+  pages.push(links);
+  site.setContent(pages,socialData);
 });

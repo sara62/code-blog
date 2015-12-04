@@ -22,27 +22,16 @@ header {
 	text-align:center;
 	font-weight:bold;
 	padding-top:25px;
+	padding-bottom:10px;
 	color:#C4D0BB;
 }
 #site-title a {
 	color:#C4D0BB;
+	transition: all 0.5s ease;
 }
 #site-title a:hover {
 	color:#A9A9A9;
-}
-nav div ul li {
-	display:inline;
-	padding:5px;
-}
-nav div {
-	margin:20px;
-	text-align:center;
-}
-nav div ul li a {
-	color:#C4D0BB;
-}
-nav div ul li a:hover {
-	color:#A9A9A9;
+	font-size:48px;
 }
 body {
 	line-height: 18px;
@@ -102,12 +91,15 @@ a
 {
 	text-decoration:none;
 	color:#010300;
-	transition: color 0.5s ease;
+	transition: all 0.5s ease;
 	outline:0px;
+	padding:0px;
 }
 a:hover
 {
 	color:#272F21;
+	font-size:24px;
+	padding:25px;
 }
 article a
 {
@@ -176,11 +168,45 @@ img.pull-right {
 	padding:20px 20px 20px 20px;
 }
 /* Social Icons */
-.social li
-{
-	margin:5px;
-}
 .icon {
-	font-size:18px;
+	box-shadow:0px 0px 0px #000;
+	background-color:#071100;
+	border:0px solid black;
+	float:none;
+	clear:none;
+	margin:0px;
+}
+.octocat {
+	width:25px;
+	height:21px;
+	transition: all 0.5s ease;
+}
+.octocat:hover {
+	width:50px;
+	height:42px;
+}
+/*
+	Navigation Menu Styling
+*/
+.hamburger-menu {
+	background-color:#C4D0BB;
+	transition: background-color 0.5s ease;
+	outline:0px;
+}
+.hamburger-menu:hover {
+	background-color:#A9A9A9;
+}
+#desktop-menu nav div ul li {
+	display:inline;
 	padding:5px;
+}
+#desktop-menu nav div {
+	margin:20px;
+	text-align:center;
+}
+#desktop-menu nav div ul li a {
+	color:#C4D0BB;
+}
+#desktop-menu nav div ul li a:hover {
+	color:#A9A9A9;
 }
