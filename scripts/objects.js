@@ -61,6 +61,7 @@ Blog.prototype.parseFilterData = function(template) {
   var filterContainer = template;
   this.filterDOM = filterContainer.find('#article-filters');
   template.find('#article-filters').remove();
+  this.filterDOM.attr('id',(this.name + '-filters'));
   return template;
 };
 Blog.prototype.setFilterData = function() {
@@ -110,10 +111,9 @@ Blog.prototype.setFilterData = function() {
     $('#articles article').show();
     var selection = $('#author-filter option:selected').attr('value');
     if (selection !== 'All Authors') {
-      $('#articles article').each(function(){
+      $('#articles article').each(function() {
         var articleAuthor = $(this).find('.article-author').text();
-        if(articleAuthor!==selection)
-        {
+        if(articleAuthor !== selection) {
           $(this).hide();
         }
       });
@@ -127,8 +127,7 @@ Blog.prototype.setFilterData = function() {
       $('#articles article').each(function(){
         var articleCategory = $(this).find('.article-category span').text();
         articleCategory = articleCategory.slice(10);
-        if(articleCategory!==selection)
-        {
+        if(articleCategory !== selection) {
           $(this).hide();
         }
       });
@@ -302,6 +301,7 @@ var Navigation = function(container,sitePages,siteSocialData,siteTitle,showDurat
   this.rawSocialData = siteSocialData;
   this.$mobileContainer = {};
   this.$desktopContainer = {};
+  this.mobileIsOpen = false;
   this.setupMenus(showDuration,hideDuration);
 };
 Navigation.prototype.setupMenus = function() {
@@ -309,16 +309,104 @@ Navigation.prototype.setupMenus = function() {
   this.$container.find('#mobile-menu').remove();
   this.$desktopContainer = this.$container.find('#desktop-menu').clone();
   this.$container.find('#desktop-menu').remove();
-  //this.setupMobileMenu(this.$mobileContainer);
+  this.setupMobileMenu(this.$mobileContainer);
   this.setupDesktopMenu(this.$desktopContainer);
 };
 Navigation.prototype.setupMobileMenu = function(container) {
-  this.$container = container;
-  this.$navContainer = this.container.find('#mobile-nav');
-  this.$navContainer.hide();
+  var $mobileMenu = this.$mobileContainer;
+  var mobileIsOpen = this.mobileIsOpen;
   this.$container.on('click','.hamburger-menu',function() {
-    //this.$navContainer.toggle();
+    if (mobileIsOpen) {
+      $mobileMenu.find('.hamburger-menu').rotate({
+        duration:500,
+        angle: 90,
+        animateTo:0
+      });
+      mobileIsOpen = false;
+      var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
+      $mobileMenu.find('.site-menu').animate({
+        left: menuOffScreen
+      }, 500, function() {});
+    } else {
+      $mobileMenu.find('.hamburger-menu').rotate({
+        duration:500,
+        angle: 0,
+        animateTo:90
+      });
+      mobileIsOpen = true;
+      $mobileMenu.find('.site-menu').animate({
+        left: '-18px'
+      }, 500, function() {});
+    }
   });
+  this.$container.on('click','#mobile-menu .nav-link-item',function() {
+    if (mobileIsOpen) {
+      $mobileMenu.find('.hamburger-menu').rotate({
+        duration:500,
+        angle: 90,
+        animateTo:0
+      });
+      mobileIsOpen = false;
+      var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
+      $mobileMenu.find('.site-menu').animate({
+        left: menuOffScreen
+      }, 500, function() {});
+    } else {
+      $mobileMenu.find('.hamburger-menu').rotate({
+        duration:500,
+        angle: 0,
+        animateTo:90
+      });
+      mobileIsOpen = true;
+      $mobileMenu.find('.site-menu').animate({
+        left: '-18px'
+      }, 500, function() {});
+    }
+  });
+  $('#site-title').on('click',function() {
+    if (mobileIsOpen) {
+      $mobileMenu.find('.hamburger-menu').rotate({
+        duration:500,
+        angle: 90,
+        animateTo:0
+      });
+      mobileIsOpen = false;
+      var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
+      $mobileMenu.find('.site-menu').animate({
+        left: menuOffScreen
+      }, 500, function() {});
+    }
+  });
+  var $linkItem = $mobileMenu.find('.site-menu .nav-link-item').first().clone();
+  $mobileMenu.find('.site-menu .nav-link-item').remove();
+  $.each(this.sitePages,function(index,value) {
+    var $link = $linkItem.clone();
+    if (value.generalType === 'blog') {
+      $link.attr('data-nav',value.name).find('a').attr('href',('#' + value.name + '-filters')).text(value.name.replace(/\w\S*/g,function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}));
+    } else {
+      $link.attr('data-nav',value.name).find('a').attr('href',('#' + value.name)).text(value.name.replace(/\w\S*/g,function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}));
+    }
+    $mobileMenu.find('.site-menu ul').append($link);
+  });
+  $.each(this.rawSocialData,function(index,value) {
+    var $link = $linkItem.clone();
+    $link = $link.find('a');
+    $link.attr('href',value.url).attr('target','_blank');
+    var $image = $('<img width="50" height="42" />').attr('alt',('My ' + value.title)).attr('src',value.srcUrl).attr('class','icon octocat');
+    $link.append($image);
+    $mobileMenu.find('.site-menu').append('<div class="social"></div>').find('.social').append($link);
+  });
+  $.each(this.sitePages,function(index,value) {
+    if(value.generalType === 'blog') {
+      //$mobileMenu.find('nav').append(value.filterDOM);
+    }
+  });
+  this.$container.append(this.$mobileContainer);
+  this.setupMenuActions(this.$mobileContainer,500,500);
+  var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
+  $mobileMenu.find('.site-menu').animate({
+    left: menuOffScreen
+  }, 500, function() {});
 };
 Navigation.prototype.setupDesktopMenu = function(container) {
   var $desktopMenu = this.$desktopContainer;
@@ -327,7 +415,7 @@ Navigation.prototype.setupDesktopMenu = function(container) {
   $.each(this.sitePages,function(index,value) {
     var $link = $linkItem.clone();
     if (value.generalType === 'blog') {
-      $link.attr('data-nav',value.name).find('a').attr('href',('#' + value.name + '-filter')).text(value.name.replace(/\w\S*/g,function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}));
+      $link.attr('data-nav',value.name).find('a').attr('href',('#' + value.name + '-filters')).text(value.name.replace(/\w\S*/g,function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}));
     } else {
       $link.attr('data-nav',value.name).find('a').attr('href',('#' + value.name)).text(value.name.replace(/\w\S*/g,function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();}));
     }
@@ -339,7 +427,7 @@ Navigation.prototype.setupDesktopMenu = function(container) {
     $link.attr('href',value.url).attr('target','_blank');
     var $image = $('<img width="50" height="42" />').attr('alt',('My ' + value.title)).attr('src',value.srcUrl).attr('class','icon octocat');
     $link.append($image);
-    $desktopMenu.find('.site-menu').append('<div></div>').append($link);
+    $desktopMenu.find('.site-menu').append('<div class="social"></div>').find('.social').append($link);
   });
   $.each(this.sitePages,function(index,value) {
     if(value.generalType === 'blog') {
