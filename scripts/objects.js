@@ -106,33 +106,6 @@ Blog.prototype.setFilterData = function() {
     newOption.attr('value',value);
     filters.find('#category-filter .filter-select').append(newOption);
   });
-  filters.find('#author-filter').on('change',function() {
-    $('#category-filter .filter-select').val('All Categories');
-    $('#articles article').show();
-    var selection = $('#author-filter option:selected').attr('value');
-    if (selection !== 'All Authors') {
-      $('#articles article').each(function() {
-        var articleAuthor = $(this).find('.article-author').text();
-        if(articleAuthor !== selection) {
-          $(this).hide();
-        }
-      });
-    }
-  });
-  filters.find('#category-filter').on('change',function() {
-    $('#author-filter .filter-select').val('All Authors');
-    $('#articles article').show();
-    var selection = $('#category-filter option:selected').attr('value');
-    if (selection !== 'All Categories') {
-      $('#articles article').each(function(){
-        var articleCategory = $(this).find('.article-category span').text();
-        articleCategory = articleCategory.slice(10);
-        if(articleCategory !== selection) {
-          $(this).hide();
-        }
-      });
-    }
-  });
   this.filtersDOM = filters;
 };
 Blog.prototype.resetFilters = function() {
@@ -161,6 +134,36 @@ Blog.prototype.parseArticleData = function(template) {
   //Setup the blog's filters.
   this.setFilterData();
 };
+Blog.prototype.setupFilterActions = function() {
+  var blogFilters = '#' + this.name + '-filters';
+  $(blogFilters).find('#author-filter').on('change',function() {
+    $('#category-filter .filter-select').val('All Categories');
+    $('#articles article').show();
+    var selection = $('#author-filter option:selected').attr('value');
+    if (selection !== 'All Authors') {
+      $('#articles article').each(function() {
+        var articleAuthor = $(this).find('.article-author').text();
+        if(articleAuthor !== selection) {
+          $(this).hide();
+        }
+      });
+    }
+  });
+  $(blogFilters).find('#category-filter').on('change',function() {
+    $('#author-filter .filter-select').val('All Authors');
+    $('#articles article').show();
+    var selection = $('#category-filter option:selected').attr('value');
+    if (selection !== 'All Categories') {
+      $('#articles article').each(function(){
+        var articleCategory = $(this).find('.article-category span').text();
+        articleCategory = articleCategory.slice(10);
+        if(articleCategory !== selection) {
+          $(this).hide();
+        }
+      });
+    }
+  });
+};
 Blog.prototype.getFiltersDOM = function() {
   return this.filterDOM;
 };
@@ -169,24 +172,24 @@ Blog.prototype.getDOM = function() {
 };
 Blog.prototype.showContent = function(duration) {
   this.resetFilters();
-  this.filterDOM.show(duration);
+  $('#filters').show(duration);
   $(this.DOM).find('article p:not(:first-child)').hide();
   $(this.DOM).find('.read-more').show();
   $(this.DOM).show(duration);
 };
 Blog.prototype.hideContent = function(duration) {
-  this.filtersDOM.hide(duration);
+  $('#filters').hide(duration);
   $(this.DOM).hide(duration);
 };
 Blog.prototype.fadeInContent = function(duration) {
   this.resetFilters();
-  this.filterDOM.fadeIn(duration);
+  $('#filters').fadeIn(duration);
   $(this.DOM).find('article p:not(:first-child)').hide();
   $(this.DOM).find('.read-more').show();
   $(this.DOM).fadeIn(duration);
 };
 Blog.prototype.fadeOutContent = function(duration) {
-  this.filtersDOM.fadeOut(duration);
+  $('#filters').fadeOut(duration);
   $(this.DOM).fadeOut(duration);
 };
 /*
@@ -311,10 +314,12 @@ Navigation.prototype.setupMenus = function() {
   this.$container.find('#desktop-menu').remove();
   this.setupMobileMenu(this.$mobileContainer);
   this.setupDesktopMenu(this.$desktopContainer);
+  this.setupArticleFilters();
 };
 Navigation.prototype.setupMobileMenu = function(container) {
   var $mobileMenu = this.$mobileContainer;
   var mobileIsOpen = this.mobileIsOpen;
+  var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
   this.$container.on('click','.hamburger-menu',function() {
     if (mobileIsOpen) {
       $mobileMenu.find('.hamburger-menu').rotate({
@@ -322,6 +327,7 @@ Navigation.prototype.setupMobileMenu = function(container) {
         angle: 90,
         animateTo:0
       });
+      $('#mobile-menu').css('width','0px');
       mobileIsOpen = false;
       var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
       $mobileMenu.find('.site-menu').animate({
@@ -333,6 +339,7 @@ Navigation.prototype.setupMobileMenu = function(container) {
         angle: 0,
         animateTo:90
       });
+      $('#mobile-menu').css('width','auto');
       mobileIsOpen = true;
       $mobileMenu.find('.site-menu').animate({
         left: '-18px'
@@ -346,8 +353,8 @@ Navigation.prototype.setupMobileMenu = function(container) {
         angle: 90,
         animateTo:0
       });
+      $('#mobile-menu').css('width','0px');
       mobileIsOpen = false;
-      var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
       $mobileMenu.find('.site-menu').animate({
         left: menuOffScreen
       }, 500, function() {});
@@ -357,6 +364,7 @@ Navigation.prototype.setupMobileMenu = function(container) {
         angle: 0,
         animateTo:90
       });
+      $('#mobile-menu').css('width','auto');
       mobileIsOpen = true;
       $mobileMenu.find('.site-menu').animate({
         left: '-18px'
@@ -370,8 +378,8 @@ Navigation.prototype.setupMobileMenu = function(container) {
         angle: 90,
         animateTo:0
       });
+      $('#mobile-menu').css('width','0px');
       mobileIsOpen = false;
-      var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
       $mobileMenu.find('.site-menu').animate({
         left: menuOffScreen
       }, 500, function() {});
@@ -396,17 +404,12 @@ Navigation.prototype.setupMobileMenu = function(container) {
     $link.append($image);
     $mobileMenu.find('.site-menu').append('<div class="social"></div>').find('.social').append($link);
   });
-  $.each(this.sitePages,function(index,value) {
-    if(value.generalType === 'blog') {
-      //$mobileMenu.find('nav').append(value.filterDOM);
-    }
-  });
   this.$container.append(this.$mobileContainer);
   this.setupMenuActions(this.$mobileContainer,500,500);
-  var menuOffScreen = (-1 * ($mobileMenu.find('.site-menu').width())) - 5;
   $mobileMenu.find('.site-menu').animate({
     left: menuOffScreen
   }, 500, function() {});
+  $('#mobile-menu').css('width','0px');
 };
 Navigation.prototype.setupDesktopMenu = function(container) {
   var $desktopMenu = this.$desktopContainer;
@@ -429,11 +432,6 @@ Navigation.prototype.setupDesktopMenu = function(container) {
     $link.append($image);
     $desktopMenu.find('.site-menu').append('<div class="social"></div>').find('.social').append($link);
   });
-  $.each(this.sitePages,function(index,value) {
-    if(value.generalType === 'blog') {
-      $desktopMenu.find('nav').append(value.filterDOM);
-    }
-  });
   this.$container.append(this.$desktopContainer);
   this.setupMenuActions(this.$desktopContainer,500,500);
 };
@@ -455,5 +453,21 @@ Navigation.prototype.setupMenuActions = function($menuContainer,fadeInDuration,f
         }
       });
     });
+  });
+};
+Navigation.prototype.setupArticleFilters = function() {
+  var filters = '';
+  $.each(this.sitePages,function(index,value) {
+    if(value.generalType === 'blog') {
+      var filtersContainer = '<div id="' + value.name + '-filters">' + value.filtersDOM.html() + '</div>';
+      filters = filters + filtersContainer;
+    }
+  });
+  filters = $('<div id="filters"></div>').html(filters);
+  filters.appendTo('header');
+  $.each(this.sitePages,function(index,value){
+    if(value.generalType === 'blog') {
+      value.setupFilterActions();
+    }
   });
 };

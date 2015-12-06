@@ -100,8 +100,7 @@ a
 a:hover
 {
 	color:#272F21;
-	font-size:24px;
-	padding:25px;
+	font-size:16px;
 }
 article a
 {
@@ -125,8 +124,12 @@ img.pull-right {
 	clear: right;
 }
 /* Article Styling */
-#article-filters {
-	padding-top:20px;
+.filter {
+	padding:10px;
+}
+#filters {
+	text-align:center;
+	padding-bottom:20px;
 }
 .filter-select {
 	margin-top:10px;
@@ -215,6 +218,7 @@ img.pull-right {
 #mobile-menu {
 	position:fixed;
 	top:65px;
+	z-index:0;
 }
 #mobile-menu a {
 	padding:0px;
@@ -306,6 +310,12 @@ img.pull-right {
 		display:block; !important;
 	}
 	/* Article Styling */
+	.filter {
+		display:block;
+	}
+	#filters {
+		text-align:right;
+	}
 	.article-title {
 		padding:20px 20px 0px 40px;
 		text-align:center;
@@ -327,6 +337,12 @@ img.pull-right {
 		display:block; !important;
 	}
 	/* Article Styling */
+	.filter {
+		display:block;
+	}
+	#filters {
+		text-align:right;
+	}
 	.article-title {
 		padding:20px 20px 0px 40px;
 		text-align:center;
@@ -348,6 +364,12 @@ img.pull-right {
 		display:block; !important;
 	}
 	/* Article Styling */
+	.filter {
+		display:block;
+	}
+	#filters {
+		text-align:center;
+	}
 	.article-title {
 		padding:20px 20px 0px 40px;
 		text-align:center;
@@ -369,6 +391,12 @@ img.pull-right {
 		display:none; !important;
 	}
 	/* Article Styling */
+	.filter {
+		display:inline;
+	}
+	#filters {
+		text-align:center;
+	}
 	.article-title {
 		padding:20px 20px 0px 20px;
 		text-align:left;
@@ -390,6 +418,12 @@ img.pull-right {
 		display:none; !important;
 	}
 	/* Article Styling */
+	.filter {
+		display:inline;
+	}
+	#filters {
+		text-align:center;
+	}
 	.article-title {
 		padding:20px 20px 0px 20px;
 		text-align:left;
@@ -411,6 +445,12 @@ img.pull-right {
 		display:none; !important;
 	}
 	/* Article Styling */
+	.filter {
+		display:inline;
+	}
+	#filters {
+		text-align:center;
+	}
 	.article-title {
 		padding:20px 20px 0px 20px;
 		text-align:left;
