@@ -9,16 +9,48 @@
 	font-family: 'Helvetica',Sans-serif;
 	font-size: 12px;
 }
+html {
+	background-color:#010300;
+}
+header {
+	background-color:#071100;
+	padding-bottom:10px;
+	margin-top:50px;
+	margin-bottom:50px;
+}
+#site-title {
+	text-align:center;
+	font-weight:bold;
+	padding-top:25px;
+	color:#C4D0BB;
+}
+#site-title a {
+	color:#C4D0BB;
+}
+#site-title a:hover {
+	color:#A9A9A9;
+}
+nav div ul li {
+	display:inline;
+	padding:5px;
+}
+nav div {
+	margin:20px;
+	text-align:center;
+}
+nav div ul li a {
+	color:#C4D0BB;
+}
+nav div ul li a:hover {
+	color:#A9A9A9;
+}
 body {
 	line-height: 18px;
 	word-wrap: break-word;
 }
 section {
-	width: 90%;
-	max-width: 800px;
+	width: 100%;
 	min-width: 300px;
-	margin: 0 auto;
-	padding: 5px;
 }
 img {
 	width: auto;
@@ -34,8 +66,20 @@ img {
 	-webkit-box-shadow: 5px 5px 5px #000000;
 }
 article {
-	float: left;
-	margin: 20px;
+	background-color:#C4D0BB;
+	width:100%;
+	float:left;
+	clear:left;
+	color:#010300;
+}
+#articles
+{
+	margin:0 auto;
+	width:90%;
+}
+#articles article
+{
+	margin-bottom:60px;
 }
 p {
 	text-indent: 20px;
@@ -44,6 +88,39 @@ footer {
 	text-align: center;
 	padding-bottom: 50px;
 	padding-top: 50px;
+	width:100%;
+	color:#A9A9A9;
+	float:left;
+}
+.section-container
+{
+	float:left;
+	clear:left;
+	width:100%;
+}
+a
+{
+	text-decoration:none;
+	color:#010300;
+	transition: color 0.5s ease;
+	outline:0px;
+}
+a:hover
+{
+	color:#272F21;
+}
+article a
+{
+	color:#010300;
+}
+article a:hover
+{
+	color:#272F21;
+}
+.read-more{
+	position:relative;
+	top:-20px;
+	left:20px;
 }
 /* BlogArticles.js Styling */
 img.pull-left {
@@ -55,17 +132,56 @@ img.pull-right {
 	clear: right;
 }
 /* Article Styling */
+#article-filters {
+	padding-top:20px;
+}
 .article-title {
 	font-size: 18px;
-}
-.article-author ,
-.article-category ,
-.article-published-date {
-	font-size: 10px;
+	padding:20px 20px 0px 20px;
+	color:#071100;
 }
 .article-content {
+	padding:20px 20px 40px 20px;
 }
 .article-meta-information {
 	line-height: 16px;
 	margin: 5px;
+	font-size: 10px;
+	padding:20px 20px 0px 20px;
+}
+/* Basic Page Styling */
+.basic-page {
+	width:90%;
+	margin:0 auto;
+	padding:20px;
+	float:none;!important;
+	clear:none;!important;
+}
+.basic-title {
+	font-size: 18px;
+	margin-bottom:20px;
+}
+/* Reference Page Styling */
+.reference-page {
+	width:90%;
+	margin:0 auto;
+	padding:20px;
+	float:none;!important;
+	clear:none;!important;
+}
+.reference-title {
+	font-size: 18px;
+	margin-bottom:20px;
+}
+.link-items {
+	margin-top:10px;
+}
+/* Social Icons */
+.social li
+{
+	margin:5px;
+}
+.icon {
+	font-size:18px;
+	padding:5px;
 }
