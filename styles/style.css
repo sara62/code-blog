@@ -122,7 +122,7 @@ img.pull-right {
 .filter {
 	padding: 10px;
 }
-#filters {
+.filters {
 	text-align: center;
 	padding-bottom: 20px;
 }
@@ -337,7 +337,7 @@ img.pull-right {
 	.filter {
 		display:block;
 	}
-	#filters {
+	.filters {
 		text-align:right;
 	}
 	.article-title {
@@ -362,7 +362,7 @@ img.pull-right {
 	.filter {
 		display:block;
 	}
-	#filters {
+	.filters {
 		text-align:right;
 	}
 	.article-title {
@@ -387,7 +387,7 @@ img.pull-right {
 	.filter {
 		display:block;
 	}
-	#filters {
+	.filters {
 		text-align:center;
 	}
 	.article-title {
@@ -412,7 +412,7 @@ img.pull-right {
 	.filter {
 		display:inline;
 	}
-	#filters {
+	.filters {
 		text-align:center;
 	}
 	.article-title {
