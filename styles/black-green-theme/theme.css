@@ -1,0 +1,122 @@
+/* Theme Specific Styling */
+/* Base Styling */
+  * {
+    font-family: 'Helvetica',Sans-serif;
+    font-size: 12px;
+  }
+  html {
+    background-color: #010300;
+  }
+  header {
+    background-color: #071100;
+  }
+  body {
+  	line-height: 18px;
+  }
+  img {
+  	border: solid black 1px;
+  	box-shadow: 5px 5px 5px #000000;
+  	-moz-box-shadow: 5px 5px 5px #000000;
+  	-webkit-box-shadow: 5px 5px 5px #000000;
+  }
+  article {
+  	background-color: #C4D0BB;
+  	color: #010300;
+  }
+  footer {
+  	color: #A9A9A9;
+  }
+  a {
+  	color: #010300;
+  }
+  a:hover {
+    color: #272F21;
+    font-size: 16px;
+  }
+  article a {
+    color: #010300;
+  }
+  article a:hover {
+    color: #272F21;
+  }
+/* Layout Styling */
+  /* Site Title */
+  #site-title {
+  	font-weight: bold;
+  	color: #C4D0BB;
+  }
+  #site-title a {
+  	color: #C4D0BB;
+  }
+  #site-title a:hover {
+  	color: #A9A9A9;
+  	font-size: 32px;
+  }
+  /* Icons */
+  .icon {
+  	box-shadow: 0px 0px 0px #000;
+  	-moz-box-shadow: 0px 0px 0px #000;
+  	-webkit-box-shadow: 0px 0px 0px #000;
+  	background-color: #071100;
+  	border: 0px solid black;
+  }
+  /* Navigation Menus */
+    /* Mobile Menu */
+    .hamburger-menu {
+    	background-color: #C4D0BB;
+    	font-size: 18px;
+    	box-shadow: 0px 0px 0px #000;
+    	-moz-box-shadow: 0px 0px 0px #000;
+    	-webkit-box-shadow: 0px 0px 0px #000;
+    	border: solid 1px white;
+    }
+    .hamburger-menu:hover {
+    	background-color: #A9A9A9;
+    	font-size: 18px;
+    }
+    #mobile-menu .site-menu {
+    	background-color: #000000;
+    	border: solid 1px #AAA;
+    }
+    #mobile-menu .nav-link-item {
+    	border-bottom: solid 1px #AAA;
+    	-webkit-border-image: -webkit-linear-gradient(left, transparent, #AAA) 100% 1;
+    	-moz-border-image: -moz-linear-gradient(left, transparent, #AAA) 100% 1;
+    	-o-border-image: -o-linear-gradient(left, transparent, #AAA) 100% 1;
+    	border-image: linear-gradient(left, transparent, #AAA) 100% 1;
+    }
+    #mobile-menu .nav-link-item a {
+    	color: #C4D0BB;
+    }
+    #mobile-menu .nav-link-item a:hover {
+    	color: #A9A9A9;
+    }
+    /* Desktop Menu */
+    #desktop-menu nav div ul li a {
+    	color: #C4D0BB;
+    }
+    #desktop-menu nav div ul li a:hover {
+    	color: #A9A9A9;
+    }
+/* Module Styling */
+  /* Articles Template */
+  .article-title {
+  	font-size: 18px;
+  	color: #071100;
+  }
+  .article-meta-information {
+  	line-height: 16px;
+  	font-size: 10px;
+  }
+  /* Basic Page Template */
+  .basic-title {
+  	font-size: 18px;
+  }
+  /* Reference Page Template */
+  .reference-title {
+  	font-size: 18px;
+  }
+  /* Social Icons */
+  #mobile-menu .octocat {
+  	background-color: #000;
+  }

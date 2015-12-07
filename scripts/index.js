@@ -1,8 +1,7 @@
 $(function(){
-  var site = new Site('CODE_BLOG',{title:'github',url:'https://github.com/jhm90/',srcUrl:'images/icons/Octocat.png','width':'50','height':'42'});
+  var site = new Site('CODE_BLOG',{'links':[{title:'github',url:'https://github.com/jhm90/',srcUrl:'images/icons/Octocat.png',width:'50',height:'42',imgClass:'octocat'}]});
   var blogData = {
     'title' : 'Articles',
-    'id' : '0',
     'articles' : [{
       title:       'Bacon Ipsum',
       category:    'food',

@@ -3,13 +3,16 @@ var Site = function(siteTitle,socialData) {
   this.container = $('main');
   $('#site-title a').text(siteTitle);
   this.templates = new Templates();
-  this.navigation = new Navigation(socialData);
-  this.idIndex = 0;
+  this.navigation = new Navigation(socialData,this.templates);
+  this.articleIdIndex = 0;
+  this.articlesIdIndex = 0;
 };
 /* The Navigation Object */
-var Navigation = function(siteSocialData) {
+var Navigation = function(socialData,siteTemplates) {
   this.pages = [];
+  this.templates = siteTemplates;
   this.setupHamburgerMenu();
+  this.addSocialLinks(socialData);
 };
 Navigation.prototype.setupHamburgerMenu = function() {
   var menuOffScreen = (-1 * ($('#mobile-menu').find('.site-menu').width())) - 5;
@@ -47,6 +50,14 @@ Navigation.prototype.setupHamburgerMenu = function() {
   });
   $('#mobileMenu').find('.site-menu').animate({left: menuOffScreen}, 500, function() {});
   $('#mobile-menu').css('width','0px');
+};
+Navigation.prototype.addSocialLinks = function(data) {
+  var $socialLinks = this.templates.getTemplate('navigation-social-link');
+  $socialLinks = this.templates.renderTemplate($socialLinks,data);
+  $mobileSocialLinks = $socialLinks.clone();
+  $desktopSocialLinks = $socialLinks.clone();
+  $mobileSocialLinks.appendTo('#mobile-menu ul');
+  $desktopSocialLinks.appendTo('#desktop-menu .social ul');
 };
 /* The Templates Object */
 var Templates = function() {
@@ -117,9 +128,11 @@ Templates.prototype.addTemplates = function() {
       '</li>' +
     '</script>'));
   var $navigationSocialLinkTemplate = $(('<script type="text/x-handlebars-template" id="navigation-social-link-template">' +
-      '<li class="nav-link-item">' +
-        '<a href="{{url}}" target="_blank"><img width={{width}} height={{height}} alt="My {{title}}" src="{{srcUrl}}" class="icon {{imgClass}}"></a>' +
-      '</li>' +
+      '{{#each links}}' +
+        '<li class="nav-social-link-item">' +
+          '<a href="{{url}}" target="_blank"><img width={{width}} height={{height}} alt="My {{title}}" src="{{srcUrl}}" class="icon {{imgClass}}"></a>' +
+        '</li>' +
+      '{{/each}}' +
     '</script>'));
   this.templates['basic-articles'] = $basicArticlesTemplate;
   this.templates['basic-article-filters'] = $basicArticlesFiltersTemplate;
@@ -138,10 +151,12 @@ Templates.prototype.renderTemplate = function($template,context) {
 /* The Page Object */
 var Page = function(pageSite,pageType,pageData) {
   if(pageType === 'basic-articles') {
+    pageData.id = pageSite.articlesIdIndex;
+    pageSite.articlesIdIndex += 1;
     var currentDate = new Date();
     $.each(pageData['articles'],function(index,value) {
-      this.id = pageSite.idIndex;
-      pageSite.idIndex += 1;
+      this.id = pageSite.articleIdIndex;
+      pageSite.articleIdIndex += 1;
       var publishedDate = new Date(this.date);
       var timePassed = Math.floor((currentDate.getTime() - publishedDate.getTime())/((3600*1000)*24));
       if (timePassed === 1) {
@@ -291,4 +306,7 @@ var Page = function(pageSite,pageType,pageData) {
       }
     });
   }
+  $socialNavLinks = $('#mobile-menu .nav-social-link-item').clone();
+  $('#mobile-menu .nav-social-link-item').remove();
+  $socialNavLinks.appendTo('#mobile-menu .site-menu ul');
 };

@@ -1,0 +1,101 @@
+/* Responsive Alterations */
+/* Very small browsers. */
+@media (min-width: 0px) {
+	#desktop-menu {
+		display:none; !important;
+	}
+	#mobile-menu {
+		display:block; !important;
+	}
+	.filter {
+		display:block;
+	}
+	.filters {
+		text-align:right;
+	}
+	.article-title {
+		padding:20px 20px 0px 40px;
+		text-align:center;
+	}
+	.article-meta-information {
+		text-align:left;
+	}
+	.article-content {
+		text-align:left;
+	}
+}
+/* Mobile Phones */
+@media (min-width: 400px) {
+	#desktop-menu {
+		display:none; !important;
+	}
+	#mobile-menu {
+		display:block; !important;
+	}
+	.filter {
+		display:block;
+	}
+	.filters {
+		text-align:right;
+	}
+	.article-title {
+		padding:20px 20px 0px 40px;
+		text-align:center;
+	}
+	.article-meta-information {
+		text-align:center;
+	}
+	.article-content {
+		text-align:left;
+	}
+}
+/* Tablets */
+@media (min-width: 550px) {
+	#desktop-menu {
+		display:none; !important;
+	}
+	#mobile-menu {
+		display:block; !important;
+	}
+	.filter {
+		display:block;
+	}
+	.filters {
+		text-align:center;
+	}
+	.article-title {
+		padding:20px 20px 0px 40px;
+		text-align:center;
+	}
+	.article-meta-information {
+		text-align:center;
+	}
+	.article-content {
+		text-align:center;
+	}
+}
+/* Desktops */
+@media (min-width: 750px) {
+	#desktop-menu {
+		display:block; !important;
+	}
+	#mobile-menu {
+		display:none; !important;
+	}
+	.filter {
+		display:inline;
+	}
+	.filters {
+		text-align:center;
+	}
+	.article-title {
+		padding:20px 20px 0px 20px;
+		text-align:left;
+	}
+	.article-meta-information {
+		text-align:left;
+	}
+	.article-content {
+		text-align:left;
+	}
+}
