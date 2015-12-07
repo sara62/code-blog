@@ -195,7 +195,7 @@ Blog.prototype.fadeOutContent = function(duration) {
 /*
   The Page Object
 */
-var Page = function(pageName,pageContainer,pageData,pageTemplate,pageType) {
+var Page = function(pageName,pageContainer,pageData,pageTemplate,pageType,pageTemplateName) {
   this.container = pageContainer;
   this.title = '';
   this.content = '';
@@ -205,6 +205,7 @@ var Page = function(pageName,pageContainer,pageData,pageTemplate,pageType) {
   this.linkTitles = [];
   this.linkUrls = [];
   this.template = pageTemplate;
+  this.templateName = pageTemplateName;
   this.name = pageName;
   this.generalType = 'page';
   this.setPageTemplate(this.template,this.type);
@@ -258,17 +259,135 @@ Page.prototype.fadeInContent = function(duration) {
 Page.prototype.fadeOutContent = function(duration) {
   $(this.DOM).fadeOut(duration);
 };
+/* The Templates Object */
+var Templates = function() {
+  this.templates = [];
+  this.addTemplates();
+};
+Templates.prototype.addTemplates = function() {
+  //Basic Articles Template => basic-articles-template
+  var $basicArticlesTemplate = $(('<script type="text/x-handlebars-template" id="basic-article-template">' +
+    '<div id="{{title}}-{{id}}" class="articles">' +
+      '{{#each articles}}' +
+        '<article id="article-{{id}}">' +
+          '<div class="article-title"><h2>{{title}}</h2></div>' +
+          '<div class="article-meta-information">' +
+            '<div class="article-author"><a href="{{authorUrl}}" target="_blank" rel="author">{{author}}</a></div>' +
+            '<div class="article-category"><span>{{category}}</span></div>' +
+            '<div class="article-published-date"><span>Published On </span><time datetime="{{date}}">{{date}}</time><span>{{timePassed}}</span></div>' +
+          '</div>' +
+          '<div class="article-content">{{{content}}}</div>' +
+          '<a href="#article-{{id}}" class="read-more">Continue reading...</a>' +
+        '</article>' +
+      '{{/each}}' +
+    '</div>' +
+  '</script>'));
+  //Basic Article Filters Template => basic-article-filters-template
+  var $basicArticlesFiltersTemplate = $(('<script type="text/x-handlebars-template" id="basic-article-filters-template">' +
+      '<div id="{{title}}-{{id}}-filters" class="filters">' +
+        '<ul>' +
+          '<li class="author-filter" class="filter" name="author-filter">' +
+            '<select class="filter-select">' +
+              '{{#each authors}}' +
+                '<option class="filter-option" value="{{author}}">{{author}}</option>' +
+              '{{/each}}' +
+            '</select>' +
+          '<li>' +
+          '<li class="category-filter" class="filter" name="category-filter">' +
+            //'<select class="filter-select">' +
+              //'{{#each categories}}' +
+                //'<option class="filter-option" value="{{category}}">{{category}}</option>' +
+              //'{{/each}}' +
+            //'</select>' +
+          '<li>' +
+        '</ul>' +
+      '</div>' +
+    '</script>'));
+  //Basic Page Template => basic-page-template
+  var $basicPageTemplate = $(('<script type="text/x-handlebars-template" id="basic-page-template">' +
+      '<div class="page">' +
+        '<article id="{{title}}-page" class="basic-page">' +
+          '<div class="basic-title"><h2>{{title}}</h2></div>' +
+          '<div class="basic-content">{{{content}}}</div>' +
+        '</article>' +
+      '</div>' +
+    '</script>'));
+  //Reference Page Template => reference-page-template
+  var $referencePageTemplate = $(('<script type="text/x-handlebars-template" id="reference-page-template">' +
+      '<div class="page">' +
+        '<article class="reference-page">' +
+          '<div class="reference-title"><h2>{{title}}</h2></div>' +
+          '<div class="reference-content">{{{content}}}</div>' +
+          '<div class="link-items">' +
+            '{{#each links}}' +
+            '<div class="link-item"><span>{{linkTitle}}: </span><a href="{{linkUrl}}" target="_blank">{{linkUrl}}</a></div>' +
+            '{{/each}}' +
+          '</div>' +
+        '</article>' +
+      '</div>' +
+    '</script>'));
+  this.templates['basic-articles-template'] = $basicArticlesTemplate;
+  this.templates['basic-article-filters-template'] = $basicArticlesFiltersTemplate;
+  this.templates['basic-page-template'] = $basicPageTemplate;
+  this.templates['reference-page-template'] = $referencePageTemplate;
+  /* Context Templates
+  //Basic Page Context Template
+  {
+    'title' : 'qfnqenfv',
+    'content' : 'asknfsafhlahrwihrohoqwhrohqoi.!!'
+  }
+  //Reference Page Context Template
+  {
+    'title' : '',
+    'content' : '',
+    'links' : [{
+      linkTitle : '',
+      linkUrl : ''
+    }]
+  }
+  //Blog Articles Context Template
+  {
+    'title' : 'aghaogneo',
+    'id' : '0',
+    'articles' : [{
+      id : '0',
+      title : 'AFJKFN',
+      author : 'afag',
+      authorUrl : 'http://google.com/',
+      category : 'Panda',
+      date : '12-02-15',
+      timePassed : ', 4 days ago...',
+      content : '<p>Ploop</p><p>BJKBEJKFBKJEBKJCBKJWBCKUWBICUBIUCB</p>'
+    }]
+  }
+  //Blog Article Filters Context Template
+  {
+    'id' : '0',
+    'title' : 'FLOOP',
+    'authors' : [{ author : 'Randy' },{author : 'John'}],
+    'categories' : [{ category : 'ploop' }]
+  }
+  */
+};
+Templates.prototype.getTemplate = function(template) {
+  return this.templates[template];
+};
+Templates.prototype.renderTemplate = function($template,context) {
+  var handlebarTemplate = Handlebars.compile($template.html());
+  return $(handlebarTemplate(context));
+};
 /*
   The Site Object
 */
-var Site = function(mainContainer,titleContainer) {
-  this.container = mainContainer;
-  this.titleContainer = titleContainer;
+var Site = function($mainContainer,$titleContainer) {
+  this.container = $mainContainer;
+  this.titleContainer = $titleContainer;
   this.rawSocialData = [];
-  this.templates = {};
+  this.templates = [];
   this.pages = [];
   this.loadTemplates();
   this.removeArticles();
+  this.handlebarTemplates = new Templates();
 };
 Site.prototype.loadTemplates = function() {
   var array = [];

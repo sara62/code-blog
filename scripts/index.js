@@ -179,7 +179,7 @@ $(function(){
     title:      'About',
     content:    '<p>Hello, my name is James.  This is my Code Blog.</p>'
   }];
-  var about = new Page('about',site.container,aboutData,site.templates['basic-template'],'Basic Page');
+  var about = new Page('about',site.container,aboutData,site.templates['basic-template'],'Basic Page','basic-page-template');
   pages.push(about);
   var linksData = [{
     title:      'Links',
@@ -187,7 +187,7 @@ $(function(){
     linkTitles: ['jQuery Data Method','jQuery On Method','The jQuery Method'],
     linkUrls: ['https://api.jquery.com/data/','https://api.jquery.com/on/','https://api.jquery.com/jQuery/']
   }];
-  var links = new Page('links',site.container,linksData,site.templates['reference-template'],'Reference Page');
+  var links = new Page('links',site.container,linksData,site.templates['reference-template'],'Reference Page','reference-page-template');
   pages.push(links);
   site.setContent(pages,socialData);
 });

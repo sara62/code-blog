@@ -129,6 +129,13 @@ img.pull-right {
 .filter-select {
 	margin-top: 10px;
 }
+.articles {
+	margin: 0 auto;
+	width: 90%;
+}
+.articles article {
+	margin-bottom: 60px;
+}
 #articles {
 	margin: 0 auto;
 	width: 90%;
