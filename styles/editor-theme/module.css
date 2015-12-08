@@ -1,0 +1,51 @@
+#preview-header {
+  padding:5px;
+  margin:5px;
+}
+#json-container {
+  margin-top:-30px;
+}
+#json-header {
+  padding:5px;
+  margin:5px;
+}
+#json {
+  padding:10px;
+  margin:5px;
+}
+#submit {
+  outline:none;
+  transition: all 0.5s ease;
+}
+/* From Front-End-Theme */
+.articles {
+	margin: 0 auto;
+	width: 90%;
+}
+.articles article {
+	margin-bottom: 60px;
+}
+.article-title {
+	padding: 20px 20px 0px 20px;
+}
+.article-content {
+	padding: 20px 20px 40px 20px;
+}
+.article-meta-information {
+	margin: 5px;
+	padding: 20px 20px 0px 20px;
+}
+.read-more {
+	position: relative;
+	top: -20px;
+	left: 20px;
+}
+/* Blog Articles */
+img.pull-left {
+	float: left;
+	clear: left;
+}
+img.pull-right {
+	float: right;
+	clear: right;
+}

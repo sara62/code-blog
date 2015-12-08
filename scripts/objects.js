@@ -158,17 +158,17 @@ var Page = function(pageSite,pageType,pageData) {
       this.id = pageSite.articleIdIndex;
       pageSite.articleIdIndex += 1;
       var publishedDate = new Date(this.date);
-      var timePassed = Math.floor((currentDate.getTime() - publishedDate.getTime())/((3600*1000)*24));
-      if (timePassed === 1) {
-        timePassed = ', 1 day ago...';
-      } else if (timePassed === 0) {
-        timePassed = '';
-      } else if (timePassed > 1) {
-        timePassed = (', ' + timePassed + ' days ago...');
-      } else if (timePassed < 0) {
-        timePassed = ', from the future.';
-      }
-      this.timePassed = timePassed;
+      var publishedYear = publishedDate.getFullYear();
+      var publishedMonth = publishedDate.getMonth()+1;
+      var publishedDay = function() {
+        if(publishedDate.getDate()<10) {
+          return ('0' + publishedDate.getDate());
+        } else {
+          return publishedDate.getDate();
+        }
+      }();
+      var publishDate = (publishedYear.toString()+publishedMonth.toString()+publishedDay.toString());
+      this.timePassed = (', '+moment(publishDate,'YYYYMMDD').endOf('day').fromNow());
     });
   }
   this.$obj = pageSite.templates.getTemplate(pageType);
@@ -190,11 +190,13 @@ var Page = function(pageSite,pageType,pageData) {
     if(pageType === 'basic-articles') {
       var $articles = $('#' + pageData['title'] + '-' + pageData['id']);
       $('main').children().not($articles).hide();
-      $articles.find('article p:not(:first-child)').hide();
+      $articles.find('article .article-content :not(:first-child)').hide();
       $articles.find('.read-more').show();
       $articles.find('article').show();
       $articles.on('click','.read-more',function() {
-        $(this).parent().find('.article-content p').show();
+        $(this).parent().find('.article-content *').each(function(index,value) {
+          $(value).show();
+        });
         $(this).hide();
       });
       $articles.show();
@@ -208,11 +210,13 @@ var Page = function(pageSite,pageType,pageData) {
     if(pageType === 'basic-articles') {
       var $articles = $('#' + pageData['title'] + '-' + pageData['id']);
       $('main').children().not($articles).hide();
-      $articles.find('article p:not(:first-child)').hide();
+      $articles.find('article .article-content :not(:first-child)').hide();
       $articles.find('.read-more').show();
       $articles.find('article').show();
       $articles.on('click','.read-more',function() {
-        $(this).parent().find('.article-content p').show();
+        $(this).parent().find('.article-content *').each(function(index,value) {
+          $(value).show();
+        });
         $(this).hide();
       });
       $articles.show();

@@ -2,7 +2,7 @@ $(function(){
   var site = new Site('CODE_BLOG',{'links':[{title:'github',url:'https://github.com/jhm90/',srcUrl:'images/icons/Octocat.png',width:'50',height:'42',imgClass:'octocat'}]});
   var blogData = {
     'title' : 'Articles',
-    'articles' : [{
+    'articles' : [{title: 'title', category: 'category', author: 'author', authorUrl: 'authorurl', date: '2015-12-07', content: '<p><strong>Content</strong></p><br><p>More content.</p><br><pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span><span class="hljs-params">(value)</span> </span>{<br> alert(value);<br>}<br><span class="hljs-keyword">var</span> vam = <span class="hljs-number">0</span>;<br></code></pre><p>And more content.</p><br>'},{
       title:       'Bacon Ipsum',
       category:    'food',
       author:      'Kevin Bacon',

@@ -1,0 +1,82 @@
+/* Base State Styling */
+  textarea:focus {
+    border:solid black 1px;
+  }
+  input:focus {
+    border:solid black 1px;
+  }
+  textarea:hover {
+    border:solid darkgrey 1px;
+  }
+  input:hover {
+    border:solid darkgrey 1px;
+  }
+/* Module State Styling */
+  #submit:hover {
+    color:black;
+    background-color:lightgrey;
+    border:solid darkgrey 1px;
+  }
+  #submit:active {
+    color:white;
+    outline:none;
+    background-color:darkgrey;
+    border:solid black 1px;
+  }
+  #submit:focus {
+    outline:none;
+  }
+/* From Front-End-Theme */
+  /* Responsive Alterations */
+    /* Very small browsers. */
+    @media (min-width: 0px) {
+    	.article-title {
+    		padding:20px 20px 0px 40px;
+    		text-align:center;
+    	}
+    	.article-meta-information {
+    		text-align:left;
+    	}
+    	.article-content {
+    		text-align:left;
+    	}
+    }
+    /* Mobile Phones */
+    @media (min-width: 400px) {
+    	.article-title {
+    		padding:20px 20px 0px 40px;
+    		text-align:center;
+    	}
+    	.article-meta-information {
+    		text-align:center;
+    	}
+    	.article-content {
+    		text-align:left;
+    	}
+    }
+    /* Tablets */
+    @media (min-width: 550px) {
+    	.article-title {
+    		padding:20px 20px 0px 40px;
+    		text-align:center;
+    	}
+    	.article-meta-information {
+    		text-align:center;
+    	}
+    	.article-content {
+    		text-align:center;
+    	}
+    }
+    /* Desktops */
+    @media (min-width: 750px) {
+    	.article-title {
+    		padding:20px 20px 0px 20px;
+    		text-align:left;
+    	}
+    	.article-meta-information {
+    		text-align:left;
+    	}
+    	.article-content {
+    		text-align:left;
+    	}
+    }
