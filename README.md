@@ -70,3 +70,10 @@ This is a course blog for Code Fellows 301: Intermediate Software Development.
   'height' : '',
   'imgClass' : ''
 }
+
+###Author Statistic Context Template
+
+{
+  'author' : '',
+  'averageWordLength' : ''
+}

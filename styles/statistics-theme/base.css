@@ -1,0 +1,14 @@
+header {
+  padding:10px;
+  margin-top:20px;
+  margin-bottom:10px;
+  cursor:default;
+}
+main {
+  padding:10px;
+}
+footer {
+  text-align:center;
+  margin-bottom:40px;
+  margin-top:20px;
+}

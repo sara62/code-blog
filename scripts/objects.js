@@ -2,7 +2,8 @@
 var Site = function(siteTitle,socialData) {
   this.container = $('main');
   $('#site-title a').text(siteTitle);
-  this.templates = new Templates();
+  this.ajax = new AjaxHandler();
+  this.templates = new Templates(this.ajax);
   this.navigation = new Navigation(socialData,this.templates);
   this.articleIdIndex = 0;
   this.articlesIdIndex = 0;
@@ -59,87 +60,26 @@ Navigation.prototype.addSocialLinks = function(data) {
   $mobileSocialLinks.appendTo('#mobile-menu ul');
   $desktopSocialLinks.appendTo('#desktop-menu .social ul');
 };
-/* The Templates Object */
-var Templates = function() {
-  this.templates = [];
-  this.addTemplates();
+/* The AjaxHandler Object */
+var AjaxHandler = function() {};
+AjaxHandler.prototype.getTemplate = function(template) {
+  var URL = ('data/templates/' + template + '.html');
+  var $template = {};
+  $.ajax({url: URL, success: function(result) {
+    $template = $(result);
+  }, async:false});
+  return $template;
 };
-Templates.prototype.addTemplates = function() {
-  var $basicArticlesTemplate = $(('<script type="text/x-handlebars-template" id="basic-article-template">' +
-    '<div id="{{title}}-{{id}}" class="articles">' +
-      '{{#each articles}}' +
-        '<article id="article-{{id}}">' +
-          '<div class="article-title"><h2>{{title}}</h2></div>' +
-          '<div class="article-meta-information">' +
-            '<div class="article-author"><a href="{{authorUrl}}" target="_blank" rel="author">{{author}}</a></div>' +
-            '<div class="article-category"><span>{{category}}</span></div>' +
-            '<div class="article-published-date"><span>Published On </span><time datetime="{{date}}">{{date}}</time><span>{{timePassed}}</span></div>' +
-          '</div>' +
-          '<div class="article-content">{{{content}}}</div>' +
-          '<a href="#article-{{id}}" class="read-more">Continue reading...</a>' +
-        '</article>' +
-      '{{/each}}' +
-    '</div>' +
-  '</script>'));
-  var $basicArticlesFiltersTemplate = $(('<script type="text/x-handlebars-template" id="basic-article-filters-template">' +
-      '<div id="{{title}}-{{id}}-filters" class="filters">' +
-        '<ul>' +
-          '<li class="author-filter" class="filter" name="author-filter">' +
-            '<select class="filter-select">' +
-              '{{#each authors}}' +
-                '<option class="filter-option" value="{{author}}">{{author}}</option>' +
-              '{{/each}}' +
-            '</select>' +
-          '<li>' +
-          '<li class="category-filter" class="filter" name="category-filter">' +
-            '<select class="filter-select">' +
-              '{{#each categories}}' +
-                '<option class="filter-option" value="{{category}}">{{category}}</option>' +
-              '{{/each}}' +
-            '</select>' +
-          '<li>' +
-        '</ul>' +
-      '</div>' +
-    '</script>'));
-  var $basicPageTemplate = $(('<script type="text/x-handlebars-template" id="basic-page-template">' +
-      '<div id="{{title}}-page" class="page">' +
-        '<article class="basic-page">' +
-          '<div class="basic-title"><h2>{{title}}</h2></div>' +
-          '<div class="basic-content">{{{content}}}</div>' +
-        '</article>' +
-      '</div>' +
-    '</script>'));
-  var $referencePageTemplate = $(('<script type="text/x-handlebars-template" id="reference-page-template">' +
-      '<div id="{{title}}-page" class="page">' +
-        '<article class="reference-page">' +
-          '<div class="reference-title"><h2>{{title}}</h2></div>' +
-          '<div class="reference-content">{{{content}}}</div>' +
-          '<div class="link-items">' +
-            '{{#each links}}' +
-            '<div class="link-item"><span>{{linkTitle}}: </span><a href="{{linkUrl}}" target="_blank">{{linkUrl}}</a></div>' +
-            '{{/each}}' +
-          '</div>' +
-        '</article>' +
-      '</div>' +
-    '</script>'));
-  var $navigationLinkTemplate = $(('<script type="text/x-handlebars-template" id="navigation-link-template">' +
-      '<li class="nav-link-item">' +
-        '<a href="#{{url}}">{{title}}</a>' +
-      '</li>' +
-    '</script>'));
-  var $navigationSocialLinkTemplate = $(('<script type="text/x-handlebars-template" id="navigation-social-link-template">' +
-      '{{#each links}}' +
-        '<li class="nav-social-link-item">' +
-          '<a href="{{url}}" target="_blank"><img width={{width}} height={{height}} alt="My {{title}}" src="{{srcUrl}}" class="icon {{imgClass}}"></a>' +
-        '</li>' +
-      '{{/each}}' +
-    '</script>'));
-  this.templates['basic-articles'] = $basicArticlesTemplate;
-  this.templates['basic-article-filters'] = $basicArticlesFiltersTemplate;
-  this.templates['basic-page'] = $basicPageTemplate;
-  this.templates['reference-page'] = $referencePageTemplate;
-  this.templates['navigation-link'] = $navigationLinkTemplate;
-  this.templates['navigation-social-link'] = $navigationSocialLinkTemplate;
+/* The Templates Object */
+var Templates = function(ajaxObj) {
+  this.templates = [];
+  this.templates['basic-articles'] = ajaxObj.getTemplate('basic-articles');
+  this.templates['basic-article-filters'] = ajaxObj.getTemplate('basic-article-filters');
+  this.templates['basic-page'] = ajaxObj.getTemplate('basic-page');
+  this.templates['reference-page'] = ajaxObj.getTemplate('reference-page');
+  this.templates['navigation-link'] = ajaxObj.getTemplate('navigation-link');
+  this.templates['navigation-social-link'] = ajaxObj.getTemplate('navigation-social-link');
+  this.templates['author-statistic'] = ajaxObj.getTemplate('author-statistic');
 };
 Templates.prototype.getTemplate = function(template) {
   return this.templates[template];

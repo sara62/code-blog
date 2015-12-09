@@ -1,0 +1,14 @@
+/* Base Styling */
+h2 {
+  font-size:18px;
+  font-weight:bold;
+  line-height:32px;
+}
+h4 {
+  font-size:14px;
+  font-weight:bold;
+}
+/* Module Styling */
+.author-statistic {
+  color:grey;
+}

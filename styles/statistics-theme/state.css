@@ -1,0 +1,28 @@
+.author-statistic:hover {
+  color:black;
+}
+/* Responsive Alterations */
+  /* Very small browsers. */
+  @media (min-width: 0px) {
+    header {
+      text-align:center;
+    }
+  }
+  /* Mobile Phones */
+  @media (min-width: 400px) {
+    header {
+      text-align:center;
+    }
+  }
+  /* Tablets */
+  @media (min-width: 550px) {
+    header {
+      text-align:left;
+    }
+  }
+  /* Desktops */
+  @media (min-width: 750px) {
+    header {
+      text-align:left;
+    }
+  }
