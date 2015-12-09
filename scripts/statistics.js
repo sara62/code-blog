@@ -59,9 +59,11 @@ $(function() {
   //Get Statistics
   var totalNumberOfArticles = articleData.length;
   var totalNumberOfWordsInArticles = articleData.map(getNumberOfWordsInMarkDownKey,'markdown').reduce(numberArrayAggregation);
+  var totalNumberOfCharactersInArticles = articleData.map(getNumberOfCharactersInMarkDownKey,'markdown').reduce(numberArrayAggregation);
   var authors = _.uniq(articleData.map(getKey,'author'));
   var totalNumberOfAuthors = authors.length;
-  var averageNumbeOfWordsInArticles = totalNumberOfWordsInArticles / totalNumberOfArticles;
+  var averageNumbeOfWordsInArticles = Math.round(totalNumberOfWordsInArticles / totalNumberOfArticles);
+  var averageWordLength = Math.round(totalNumberOfCharactersInArticles / totalNumberOfWordsInArticles);
   var authorStatisticsContexts = [];
   authors.forEach(function(element,index,array) {
     var totalAuthorWords = articleData.map(getNumberOfWordsInAuthorMarkDown,element).reduce(numberArrayAggregation);
@@ -75,7 +77,9 @@ $(function() {
   $('#total-articles').find('span').last().text(totalNumberOfArticles.toString());
   $('#total-authors').find('span').last().text(totalNumberOfAuthors.toString());
   $('#total-words').find('span').last().text(totalNumberOfWordsInArticles.toString());
-  $('#average-words').find('span').last().text(averageNumbeOfWordsInArticles.toString());
+  $('#total-characters').find('span').last().text(totalNumberOfCharactersInArticles.toString());
+  $('#average-words-per-article').find('span').last().text(averageNumbeOfWordsInArticles.toString());
+  $('#average-word-length').find('span').last().text(averageWordLength.toString());
   authors.forEach(function(element,index,array){
     var $authorStatisticsTemplate = templates.getTemplate('author-statistic');
     $authorStatisticsTemplate = templates.renderTemplate($authorStatisticsTemplate,authorStatisticsContexts[index]);
@@ -102,6 +106,14 @@ $(function() {
   function getNumberOfWordsInMarkDownKey(element,index,array) {
     //found the replace regex for stripping html tags here: http://stackoverflow.com/questions/7889765/remove-all-htmltags-in-a-string-with-the-jquery-text-function
     return marked(array[index][this]).replace(/(<([^>]+)>)/ig,'').split(' ').length;
+  }
+  function getNumberOfCharactersInMarkDownKey(element,index,array) {
+    var words = marked(array[index][this]).replace(/(<([^>]+)>)/ig,'').split(' ');
+    var characterCount = 0;
+    words.forEach(function(e,i,a) {
+      characterCount = characterCount + e.length;
+    });
+    return characterCount;
   }
   function getKey(element,index,array) {
     return array[index][this];
