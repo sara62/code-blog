@@ -62,8 +62,8 @@ $(function() {
   var totalNumberOfCharactersInArticles = articleData.map(getNumberOfCharactersInMarkDownKey,'markdown').reduce(numberArrayAggregation);
   var authors = _.uniq(articleData.map(getKey,'author'));
   var totalNumberOfAuthors = authors.length;
-  var averageNumbeOfWordsInArticles = Math.round(totalNumberOfWordsInArticles / totalNumberOfArticles);
-  var averageWordLength = Math.round(totalNumberOfCharactersInArticles / totalNumberOfWordsInArticles);
+  var averageNumbeOfWordsInArticles = Math.round(totalNumberOfWordsInArticles / totalNumberOfArticles) + ' (± 1)';
+  var averageWordLength = Math.round(totalNumberOfCharactersInArticles / totalNumberOfWordsInArticles) + ' (± 1)';
   var authorStatisticsContexts = [];
   authors.forEach(function(element,index,array) {
     var totalAuthorWords = articleData.map(getNumberOfWordsInAuthorMarkDown,element).reduce(numberArrayAggregation);
@@ -111,7 +111,7 @@ $(function() {
     var words = marked(array[index][this]).replace(/(<([^>]+)>)/ig,'').split(' ');
     var characterCount = 0;
     words.forEach(function(e,i,a) {
-      characterCount = characterCount + e.length;
+      characterCount = characterCount + (e).replace(/[.,-\/#!$%\^&\*;:{}=\-_`~()]/g,'').length;
     });
     return characterCount;
   }
