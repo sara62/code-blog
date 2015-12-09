@@ -64,11 +64,34 @@ Navigation.prototype.addSocialLinks = function(data) {
 var AjaxHandler = function() {};
 AjaxHandler.prototype.getTemplate = function(template) {
   var URL = ('data/templates/' + template + '.html');
+  var template = this.getData(URL,false);
   var $template = {};
-  $.ajax({url: URL, success: function(result) {
-    $template = $(result);
-  }, async:false});
+  if (template !== 'failure') {
+    $template = $(template);
+    console.log('Get Template: Successfully loaded the \'' + template + '\' template.');
+  } else {
+    console.log('Get Template: Failed to load the \'' + template + '\' template.')
+  }
   return $template;
+};
+AjaxHandler.prototype.getData = function(URL,ASYNC) {
+  $.ajax({url: URL, success: function(result) {
+    console.log(('Get Data Success: Returning data from: ' + URL));
+    return result;
+  }, async: ASYNC, error: function() {
+    console.log(('Get Data Error: was unable to retrieve data from ' + URL));
+    return 'failure';
+  }});
+};
+AjaxHandler.prototype.checkForContentUpdate = function(URL,currentData) {
+  var data = this.getData(URL,true);
+  if (currentData !== data) {
+    console.log('Check For Content Update: Changes detected to data, returing new data.');
+    return data;
+  } else {
+    console.log('Check For Content Update: No changes to the data, returning current data.');
+    return currentData;
+  }
 };
 /* The Templates Object */
 var Templates = function(ajaxObj) {
@@ -174,15 +197,14 @@ var Page = function(pageSite,pageType,pageData) {
       'authors' : [],
       'categories' : []
     };
-    var utility = new Utilities();
     var authorsArray = [];
     var categoriesArray = [];
     $.each(pageData['articles'],function(index,value) {
       authorsArray.push(value.author);
       categoriesArray.push(value.category);
     });
-    authorsArray = utility.uniqueArray(authorsArray);
-    categoriesArray = utility.uniqueArray(categoriesArray);
+    authorsArray = _.uniq(authorsArray);
+    categoriesArray = _.uniq(categoriesArray);
     filterData['authors'].push({author:'All Authors'});
     filterData['categories'].push({category:'All Categories'});
     $.each(authorsArray,function(index,value) {
