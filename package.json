@@ -2,7 +2,7 @@
   "name": "Blog",
   "version": "1.0.0",
   "description": "James Mason's Code Blog Project for Code Fellows 301.",
-  "main": "scripts/server.js",
+  "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
