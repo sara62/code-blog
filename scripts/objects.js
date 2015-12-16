@@ -102,6 +102,10 @@ Site.prototype.controller = function() {
     localStorage.setItem('currentPage',site.currentPage);
   },10);
 };
+Site.prototype.router = function() {
+  page('/',this.changePage);
+  page.start();
+};
 Site.prototype.changePage = function() {
   var hashIndex = window.location.href.indexOf('#');
   if (hashIndex === -1) {
@@ -141,6 +145,10 @@ Site.prototype.changePage = function() {
           });
           $article.find('.read-more').hide();
         }
+        $('.filters').hide();
+        $((pageTitle + ' .filters')).show();
+        $((pageTitle + ' .author-filter .filter-select')).val('All Authors');
+        $((pageTitle + ' .category-filter .filter-select')).val('All Categories');
       } else {
         $('.filters').hide();
       }
@@ -159,10 +167,6 @@ Site.prototype.changePage = function() {
     var menuOffScreen = (-1 * ($('#mobile-menu').find('.site-menu').width())) - 5;
     $('#mobile-menu').find('.site-menu').animate({left: menuOffScreen}, 500, function() {});
   }
-};
-Site.prototype.router = function() {
-  page('/',this.changePage);
-  page.start();
 };
 Site.prototype.setCurrentPage = function() {
   this.currentPage = window.location.href;
@@ -183,15 +187,21 @@ Site.prototype.getCurrentPage = function() {
 };
 /* The Navigation Object */
 var Navigation = function(socialData,siteTemplates) {
+  this.model(siteTemplates);
+  this.view(socialData);
+  this.controller();
+};
+Navigation.prototype.model = function(templates) {
   this.pages = [];
-  this.templates = siteTemplates;
+  this.templates = templates;
+};
+Navigation.prototype.view = function(socialData) {
   $('#desktop-menu .site-menu ul').children().remove();
   $('#desktop-menu .social ul').children().remove();
   $('#mobile-menu .site-menu ul').children().remove();
-  this.setupHamburgerMenu();
   this.addSocialLinks(socialData);
 };
-Navigation.prototype.setupHamburgerMenu = function() {
+Navigation.prototype.controller = function() {
   var menuOffScreen = (-1 * ($('#mobile-menu').find('.site-menu').width())) - 5;
   $('#navigation').on('click','.hamburger-menu',function(event) {
     event.preventDefault();
@@ -239,7 +249,7 @@ Navigation.prototype.addSocialLinks = function(data) {
 };
 Navigation.prototype.updateSocialLinks = function(data) {
   $('.nav-social-link-item').remove();
-  this.addSocialLinks(data);
+  this.view(data);
 };
 /* The AjaxHandler Object */
 var AjaxHandler = function() {};
@@ -289,6 +299,7 @@ AjaxHandler.prototype.checkForContentUpdate = function(currentVersion,versionURL
 var Templates = function(ajaxObj) {
   this.templates = [];
   this.templates['basic-articles'] = ajaxObj.getTemplate('basic-articles');
+  this.templates['author-articles'] = ajaxObj.getTemplate('author-articles');
   this.templates['basic-article-filters'] = ajaxObj.getTemplate('basic-article-filters');
   this.templates['basic-page'] = ajaxObj.getTemplate('basic-page');
   this.templates['reference-page'] = ajaxObj.getTemplate('reference-page');
@@ -305,45 +316,80 @@ Templates.prototype.renderTemplate = function($template,context) {
 };
 /* The Page Object */
 var Page = function(pageSite,pageData) {
+  this.model(pageSite,pageData);
+  this.view();
+  this.controller();
+};
+Page.prototype.model = function(pageSite,pageData) {
   this.site = pageSite;
   this.contentData = pageData;
   this.pageType = this.contentData.type;
   this.pageId = this.contentData.id;
   this.displayStates = [];
-  if(this.pageType === 'basic-articles') {
+  if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     this.contentData = this.setupArticleData();
   }
   this.hasBeenRendered = false;
+};
+Page.prototype.view = function() {
   this.generatePage(this.pageType,this.contentData);
+};
+Page.prototype.controller = function() {
   this.site.pages.push(this);
 };
 Page.prototype.setupArticleData = function() {
   var currentDate = new Date();
   var pageSite = this.site;
   var articles = this.contentData;
+  var array = [];
   $.each(this.contentData.articles,function(index,value) {
-    this.containerTitle = articles.title;
-    this.urlTitle = this.title.replace(/[.,-\/#!$%\^&\*;:{}=\-_`~()]/g,'').replace(/ /g,'-');
-    var publishedDate = new Date(this.date);
-    var publishedYear = publishedDate.getFullYear();
-    var publishedMonth = publishedDate.getMonth()+1;
-    var publishedDay = function() {
-      if(publishedDate.getDate()<10) {
-        return ('0' + publishedDate.getDate());
-      } else {
-        return publishedDate.getDate();
+    if (articles.type === 'author-articles') {
+      if (this.author === articles.author) {
+        this.containerTitle = articles.title;
+        this.urlTitle = this.title.replace(/[.,-\/#!$%\^&\*;:{}=\-_`~()]/g,'').replace(/ /g,'-');
+        var publishedDate = new Date(this.date);
+        var publishedYear = publishedDate.getFullYear();
+        var publishedMonth = publishedDate.getMonth()+1;
+        var publishedDay = function() {
+          if(publishedDate.getDate()<10) {
+            return ('0' + publishedDate.getDate());
+          } else {
+            return publishedDate.getDate();
+          }
+        }();
+        var publishDate = (publishedYear.toString()+publishedMonth.toString()+publishedDay.toString());
+        this.timePassed = (', '+moment(publishDate,'YYYYMMDD').endOf('day').fromNow());
+        var content = marked(this.markdown);
+        this.content = content;
+        array.push(this);
       }
-    }();
-    var publishDate = (publishedYear.toString()+publishedMonth.toString()+publishedDay.toString());
-    this.timePassed = (', '+moment(publishDate,'YYYYMMDD').endOf('day').fromNow());
-    var content = marked(this.markdown);
-    this.content = content;
+    } else {
+      this.containerTitle = articles.title;
+      this.urlTitle = this.title.replace(/[.,-\/#!$%\^&\*;:{}=\-_`~()]/g,'').replace(/ /g,'-');
+      var publishedDate = new Date(this.date);
+      var publishedYear = publishedDate.getFullYear();
+      var publishedMonth = publishedDate.getMonth()+1;
+      var publishedDay = function() {
+        if(publishedDate.getDate()<10) {
+          return ('0' + publishedDate.getDate());
+        } else {
+          return publishedDate.getDate();
+        }
+      }();
+      var publishDate = (publishedYear.toString()+publishedMonth.toString()+publishedDay.toString());
+      this.timePassed = (', '+moment(publishDate,'YYYYMMDD').endOf('day').fromNow());
+      var content = marked(this.markdown);
+      this.content = content;
+    }
   });
+  if (articles.type === 'author-articles') {
+    this.contentData.articles = array;
+  }
   return this.contentData;
 };
 Page.prototype.renderPage = function() {
   var elementId  = '';
-  if (this.pageType === 'basic-articles') {
+  if (this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     elementId = '#' + this.contentData.title + '-container';
   } else if (this.pageType === 'basic-page' || this.pageType === 'reference-page') {
     elementId = '#' + this.contentData.title;
@@ -396,7 +442,7 @@ Page.prototype.renderNavItem = function() {
   var pageSite = this.site;
 };
 Page.prototype.renderArticleFilters = function() {
-  if (this.pageType === 'basic-articles') {
+  if (this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     var $articleFilters = this.site.templates.getTemplate('basic-article-filters');
     var filterData = {
       'title' : this.contentData['title'],
@@ -406,16 +452,25 @@ Page.prototype.renderArticleFilters = function() {
     };
     var authorsArray = [];
     var categoriesArray = [];
+    var pageType = this.pageType;
     $.each(this.contentData['articles'],function(index,value) {
-      authorsArray.push(value.author);
+      if (pageType !== 'author-articles') {
+        authorsArray.push(value.author);
+      }
       categoriesArray.push(value.category);
     });
-    authorsArray = _.uniq(authorsArray);
+    if (this.pageType !== 'author-articles') {
+      authorsArray = _.uniq(authorsArray);
+    }
     categoriesArray = _.uniq(categoriesArray);
-    filterData['authors'].push({author:'All Authors'});
+    if (this.pageType !== 'author-articles') {
+      filterData['authors'].push({author:'All Authors'});
+    }
     filterData['categories'].push({category:'All Categories'});
     $.each(authorsArray,function(index,value) {
-      filterData['authors'].push({author:value});
+      if (pageType !== 'author-articles') {
+        filterData['authors'].push({author:value});
+      }
     });
     $.each(categoriesArray,function(index,value) {
       filterData['categories'].push({category:value});
@@ -425,6 +480,9 @@ Page.prototype.renderArticleFilters = function() {
       $articleFilters.appendTo('#desktop-menu nav');
     } else {
       $articleFilters.appendTo('header');
+    }
+    if (this.pageType === 'author-articles') {
+      $(('#' + this.contentData.title + ' .author-filter')).remove();
     }
   }
 };
@@ -441,7 +499,7 @@ Page.prototype.generatePage = function(pageType,pageData) {
   $(('.page-' + this.pageId)).remove();
   this.contentData = pageData;
   this.pageType = this.contentData.type;
-  if(this.pageType === 'basic-articles') {
+  if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     this.contentData = this.setupArticleData();
   }
   this.renderPage();
@@ -459,7 +517,7 @@ Page.prototype.generatePage = function(pageType,pageData) {
 Page.prototype.updateAddressBar = function(run) {
   if (run) {
     if (this.site.getCurrentPage().indexOf(this.pastContentData.title) > -1) {
-      if (this.pageType === 'basic-articles') {
+      if (this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
         if ((this.site.getCurrentPage().indexOf((this.pastContentData.title + '-')) > -1)) {
           var articleFound = false;
           for (i = 0; i < this.contentData.articles.length; i++) {
@@ -495,7 +553,7 @@ Page.prototype.updateAddressBar = function(run) {
 Page.prototype.collectDisplayData = function(firstRender) {
   var output = [];
   this.pastContentData = this.contentData;
-  if (this.pageType === 'basic-articles') {
+  if (this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     if (!firstRender) {
       var articles = this.contentData;
       var elements = $(('.page-' + this.pageId + ' article')).each(function(index) {
@@ -513,7 +571,7 @@ Page.prototype.collectDisplayData = function(firstRender) {
 };
 Page.prototype.setContentDisplayCSS = function() {
   if (this.site.getCurrentPage() === this.pastContentData.title || (this.site.getCurrentPage().indexOf((this.pastContentData.title + '-')) > -1)) {
-    if(this.pageType === 'basic-articles') {
+    if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
       var $newFilters = $(('#' + this.contentData['title']));
       var $newArticles = $(('#' + this.contentData['title'] + '-container'));
       for (i = 0; i < this.contentData.articles.length; i++) {
@@ -539,7 +597,7 @@ Page.prototype.setContentDisplayCSS = function() {
       }
     }
   } else {
-    if (this.pageType === 'basic-articles') {
+    if (this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
       $(('#' + this.contentData.title)).hide();
       $(('#' + this.contentData.title + '-container')).hide();
     } else {
@@ -550,7 +608,7 @@ Page.prototype.setContentDisplayCSS = function() {
 Page.prototype.resetPageActions = function() {
   var contentData = this.contentData;
   var pageType = this.pageType;
-  if (pageType === 'basic-articles') {
+  if (pageType === 'basic-articles' || pageType === 'author-articles') {
     var $filters = $(('#' + contentData['title']));
     var $articles = $(('#' + contentData['title'] + '-container' + ' article'));
     var $articleContainer = $(('#' + contentData['title'] + '-container'));
