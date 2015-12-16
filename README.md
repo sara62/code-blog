@@ -2,6 +2,8 @@
 
 This is a course blog for Code Fellows 301: Intermediate Software Development.
 
+You can view it here: https://jhm90.herokuapp.com/
+
 ##Page and Article Naming Standards
 
 1) Pages with multiple words in their title must separate words with _ .
