@@ -14,6 +14,10 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
   this.contentURL = contentDirectoryPath + 'content.json';
   this.socialURL = contentDirectoryPath + 'social.json';
   this.versionURL = contentDirectoryPath + 'version.txt';
+  this.socialDataLoaded = false;
+  this.contentDataLoaded = false;
+  this.versionDataLoaded = false;
+  this.templatesLoaded = false;
   if (localStorage.getItem('contentDataVersion') === null) {
     this.contentDataVersion = this.ajax.getData(this.versionURL,false);
     localStorage.setItem('contentDataVersion',this.contentDataVersion);
@@ -79,7 +83,7 @@ Site.prototype.controller = function() {
             }
           }
           if (pageHasBeenMade) {
-            site.pages[pageIndex].generatePage(site,site.contentData.pages[i]);
+            site.pages[pageIndex].generatePage(site.contentData.pages[i]);
             newPages.push(site.pages[pageIndex]);
           } else {
             var page = new Page(site,site.contentData.pages[i]);
@@ -263,6 +267,15 @@ AjaxHandler.prototype.getData = function(URL,ASYNC) {
   }});
   return output;
 };
+AjaxHandler.prototype.getData2 = function(URL,ASYNC) {
+  $.ajax({url: URL, success: function(result) {
+    console.log('Get Data: Returning data from ' + URL);
+  }, async: ASYNC, error: function() {
+    console.log('Get Data: Failure when attempting to retrieve data from ' + URL);
+  }}).done(function(data) {
+    return data.toString();
+  });
+};
 AjaxHandler.prototype.getJSON = function(URL,ASYNC) {
   var output = '';
   $.ajax({url: URL, dataType:'json', success: function(result) {
@@ -332,7 +345,7 @@ Page.prototype.model = function(pageSite,pageData) {
   this.hasBeenRendered = false;
 };
 Page.prototype.view = function() {
-  this.generatePage(this.pageType,this.contentData);
+  this.generatePage(this.contentData);
 };
 Page.prototype.controller = function() {
   this.site.pages.push(this);
@@ -494,7 +507,7 @@ Page.prototype.resetSocialNavLinkPositions = function() {
 Page.prototype.highlightCodeTags = function() {
   $('*').find('pre code').each(function(index,value){hljs.highlightBlock(value);});
 };
-Page.prototype.generatePage = function(pageType,pageData) {
+Page.prototype.generatePage = function(pageData) {
   this.displayStates = this.collectDisplayData();
   $(('.page-' + this.pageId)).remove();
   this.contentData = pageData;
