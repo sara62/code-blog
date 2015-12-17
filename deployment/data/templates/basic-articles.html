@@ -1,0 +1,16 @@
+<script type="text/x-handlebars-template" id="basic-articles-template">
+  <div id="{{title}}-container" class="articles page-{{id}}">
+    {{#each articles}}
+      <article id="{{containerTitle}}-{{urlTitle}}">
+        <div class="article-title"><h2>{{title}}</h2></div>
+        <div class="article-meta-information">
+        <div class="article-author"><a href="{{authorUrl}}" target="_blank" rel="author">{{author}}</a></div>
+          <div class="article-category"><span>{{category}}</span></div>
+            <div class="article-published-date"><span>Published On </span><time datetime="{{date}}">{{date}}</time><span>{{timePassed}}</span></div>
+          </div>
+        <div class="article-content">{{{content}}}</div>
+        <a href="#{{containerTitle}}-{{urlTitle}}" class="read-more">Continue reading...</a>
+      </article>
+    {{/each}}
+  </div>
+</script>

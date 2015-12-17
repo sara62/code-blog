@@ -1,0 +1,20 @@
+<script type="text/x-handlebars-template" id="basic-article-filters-template">
+  <div id="{{title}}" class="filters page-{{id}}">
+    <ul>
+      <li class="author-filter" class="filter" name="author-filter">
+        <select class="filter-select">
+          {{#each authors}}
+            <option class="filter-option" value="{{author}}">{{author}}</option>
+          {{/each}}
+        </select>
+      <li>
+      <li class="category-filter" class="filter" name="category-filter">
+        <select class="filter-select">
+          {{#each categories}}
+            <option class="filter-option" value="{{category}}">{{category}}</option>
+          {{/each}}
+        </select>
+      <li>
+    </ul>
+  </div>
+</script>

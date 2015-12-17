@@ -1,0 +1,99 @@
+/* Articles Template */
+.filter {
+	padding: 10px;
+}
+.filters {
+	text-align: center;
+	padding-bottom: 20px;
+}
+.filter-select {
+	margin-top: 10px;
+}
+.articles {
+	margin: 0 auto;
+	width: 90%;
+}
+.articles article {
+	margin-bottom: 60px;
+}
+.article-title {
+	padding: 20px 20px 0px 20px;
+}
+.article-content {
+	padding: 20px 20px 40px 20px;
+}
+.article-meta-information {
+	margin: 5px;
+	padding: 20px 20px 0px 20px;
+}
+.read-more {
+	position: relative;
+	top: -20px;
+	left: 20px;
+}
+/* Blog Articles */
+img.pull-left {
+	float: left;
+	clear: left;
+}
+img.pull-right {
+	float: right;
+	clear: right;
+}
+/* Generic Page Template */
+.page {
+	width: 90%;
+	margin: 0 auto;
+}
+/* Basic Page Template */
+.basic-title {
+	padding: 20px 20px 0px 20px;
+}
+.basic-content {
+	padding: 20px 20px 20px 20px;
+}
+/* Reference Page Template */
+.reference-title {
+	padding: 20px 20px 0px 20px;
+}
+.reference-content {
+	padding: 20px 20px 0px 20px;
+}
+.link-items {
+	padding: 20px 20px 20px 20px;
+}
+/* Social Icons*/
+.octocat {
+	width: 25px;
+	height: 21px;
+	transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-ms-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+}
+/* Icons */
+.icon {
+	float: none;
+	clear: none;
+	margin: 0px;
+}
+/* Navigation Menus */
+/* Mobile Menu */
+.hamburger-menu {
+	transition: background-color 0.5s ease;
+	-moz-transition: background-color 0.5s ease;
+	-ms-transition: background-color 0.5s ease;
+	-o-transition: background-color 0.5s ease;
+	-webkit-transition: background-color 0.5s ease;
+	outline: 0px;
+	float: none;
+	clear: none;
+	margin: 0px;
+	margin-left: 20px;
+	padding: 0px;
+	z-index: 2;
+	position: relative;
+	top: -50px;
+	left: -10px;
+}

@@ -1,0 +1,44 @@
+header {
+  text-align:center;
+  margin:0px !important;
+  padding:10px !important;
+}
+main {
+  margin:0 auto;
+  width:90%;
+}
+footer {
+  padding:20px 0px;
+  text-align:center;
+}
+textarea {
+  padding:5px;
+  width:90%;
+  height:200px;
+  outline:none;
+  transition: all 0.5s ease;
+}
+input {
+  outline:none;
+  padding:5px;
+  transition: all 0.5s ease;
+}
+article {
+  float:none !important;
+}
+/* From Front-End-Theme */
+article {
+	width: 100%;
+	float: left;
+	clear: left;
+}
+a {
+	text-decoration: none;
+	transition: all 0.5s ease;
+	-moz-transition: all 0.5s ease;
+	-ms-transition: all 0.5s ease;
+	-o-transition: all 0.5s ease;
+	-webkit-transition: all 0.5s ease;
+	outline: 0px;
+	padding: 0px;
+}

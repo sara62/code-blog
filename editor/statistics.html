@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="styles/lib/reset.css">
+    <link rel="stylesheet" type="text/css" href="styles/lib/normalize-3.0.2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/default.min.css">
+    <link rel="stylesheet" type="text/css" href="styles/statisticsStyle.css">
+    <title>Statistics</title>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+    <script src="scripts/lib/highlight.pack.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+    <script src="scripts/objects.js"></script>
+    <script src="scripts/statistics.js"></script>
+  </head>
+  <body>
+    <section>
+      <header>
+        <h2>CODE_BLOG Content Statistics</h2>
+      </header>
+    </section>
+    <section>
+      <main>
+        <div id="general-statistics">
+          <div><h4>General Site Statistics</h4></div>
+          <div id="total-articles"><span>Total number of articles: </span><span></span></div>
+          <div id="total-authors"><span>Total number of authors: </span><span></span></div>
+          <div id="total-words"><span>Total number of words in articles: </span><span></span></div>
+          <div id="total-characters"><span>Total number of characters in articles: </span><span></span></div>
+          <div id="average-words-per-article"><span>Average number of words per article: </span><span></span></div>
+          <div id="average-word-length"><span>Average number of characters in a word: </span><span></span></div>
+        </div>
+        <div id="author-statistics"><div><h4>Author Statistics</h4></div></div>
+      </main>
+    </section>
+    <section>
+      <footer>&copy; James Mason 2015</footer>
+    </section>
+  </body>
+</html>

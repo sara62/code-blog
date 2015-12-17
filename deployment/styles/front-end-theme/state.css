@@ -1,0 +1,124 @@
+/* Responsive Alterations */
+/* Very small browsers. */
+@media (min-width: 0px) {
+	#desktop-menu {
+		display:none; !important;
+	}
+	#mobile-menu {
+		display:block; !important;
+	}
+	.filter {
+		display:block;
+	}
+	.filters {
+		text-align:right;
+	}
+	.article-title {
+		padding:20px 20px 0px 20px;
+		text-align:center;
+	}
+	.article-meta-information {
+		text-align:left;
+	}
+	.article-content {
+		text-align:left;
+	}
+}
+/* Mobile Phones */
+@media (min-width: 400px) {
+	#desktop-menu {
+		display:none; !important;
+	}
+	#mobile-menu {
+		display:block; !important;
+	}
+	.filter {
+		display:block;
+	}
+	.filters {
+		text-align:right;
+	}
+	.article-title {
+		padding:20px 20px 0px 20px;
+		text-align:center;
+	}
+	.article-meta-information {
+		text-align:center;
+	}
+	.article-content {
+		text-align:left;
+	}
+}
+/* Tablets */
+@media (min-width: 550px) {
+	#desktop-menu {
+		display:none; !important;
+	}
+	#mobile-menu {
+		display:block; !important;
+	}
+	.filter {
+		display:block;
+	}
+	.filters {
+		text-align:center;
+	}
+	.article-title {
+		padding:20px 20px 0px 20px;
+		text-align:center;
+	}
+	.article-meta-information {
+		text-align:center;
+	}
+	.article-content {
+		text-align:center;
+	}
+}
+/* Desktops */
+@media (min-width: 750px) {
+	#desktop-menu {
+		display:block; !important;
+	}
+	#mobile-menu {
+		display:none; !important;
+	}
+	.filter {
+		display:inline;
+	}
+	.filters {
+		text-align:center;
+	}
+	.article-title {
+		padding:20px 20px 0px 20px;
+		text-align:left;
+	}
+	.article-meta-information {
+		text-align:left;
+	}
+	.article-content {
+		text-align:left;
+	}
+}
+/* Layout Styling */
+#site-title a:hover {
+	top: 2px;
+}
+#mobile-menu .social a:hover {
+	right: -12px;
+}
+#mobile-menu .nav-link-item a:hover {
+	top: -4px;
+	right: 15px;
+}
+#mobile-menu a ,
+#mobile-menu a:hover {
+	padding: 0px;
+}
+.hamburger-menu:hover {
+	padding: 0px;
+}
+/* Module Styling */
+.octocat:hover {
+	width: 50px;
+	height: 42px;
+}

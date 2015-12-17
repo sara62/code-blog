@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="styles/lib/reset.css">
+    <link rel="stylesheet" type="text/css" href="styles/lib/normalize-3.0.2.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.0.0/styles/default.min.css">
+    <link rel="stylesheet" type="text/css" href="styles/editorStyle.css">
+    <title>Editor</title>
+    <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/3.10.1/lodash.min.js"></script>
+    <script src="scripts/lib/highlight.pack.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/0.3.5/marked.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/handlebars.js/2.0.0/handlebars.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.6/moment.min.js"></script>
+    <script src="scripts/objects.js"></script>
+    <script src="scripts/editor.js"></script>
+  </head>
+  <body>
+    <section>
+      <header>
+        <h2>Generate Article JSON</h2>
+      </header>
+    </section>
+    <section>
+      <main>
+        <form id="editForm">
+          <div class="title-container">
+            <div><h4>Title</h4></div><div><input type="text" name="title" id="title" placeholder="Title" required></div>
+          </div>
+          <div class="category-container">
+            <div><h4>Category</h4></div><div><input type="text" name="category" id="category" placeholder="Category" required></div>
+          </div>
+          <div class="author-container">
+            <div><h4>Author</h4></div><div><input type="text" name="author" id="author" placeholder="Author" required></div>
+          </div>
+          <div class="author-url-container">
+            <div><h4>Author URL</h4></div><div><input type="text" name="authorUrl" id="authorUrl" placeholder="Author URL" required></div>
+          </div>
+          <div class="content-container">
+            <div><h4>Content</h4></div>
+            <div><textarea id="content" rows="4" columns="30" name="content" placeholder="Article content goes here." required></textarea></div>
+          </div>
+          <div class="submit-container"><input type="submit" id="submit" value="Generate Article"></div>
+        </form>
+        <div id="preview-container">
+          <div id="preview-header"><h3>Article Preview</h3></div>
+          <div id="preview"></div>
+        </div>
+        <div id="json-container">
+          <div id="json-header"><h3>JSON Object</h3></div>
+          <div id="json"></div>
+        </div>
+      </main>
+    </section>
+    <section>
+      <footer>&copy; James Mason 2015</footer>
+    </section>
+  </body>
+</html>

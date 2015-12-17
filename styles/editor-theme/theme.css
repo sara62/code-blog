@@ -1,0 +1,79 @@
+/* Base Theme Styling */
+  textarea {
+    border:solid lightgrey 1px;
+    box-shadow:0px 0px 0px black;
+  }
+  input {
+    border:solid lightgrey 1px;
+    box-shadow:0px 0px 0px black;
+  }
+  article {
+    border:solid lightgrey 1px;
+  }
+/* Layout Theme Styling */
+  .title-container input {
+    text-align:left;
+  }
+  .category-container input {
+    text-align:left;
+  }
+  .author-container input {
+    text-align:left;
+  }
+  .author-url-container input {
+    text-align:left;
+  }
+  .content-container input {
+    text-align:left;
+  }
+/* Module Theme Styling */
+  #json {
+    border:solid lightgrey 1px;
+  }
+  #submit {
+    color:grey;
+    background-color:white;
+    border:solid lightgrey 1px;
+  }
+/* From Front-End-Theme */
+  /* Base */
+  * {
+    font-family: 'Helvetica',Sans-serif;
+    font-size: 12px;
+  }
+  body {
+    line-height: 18px;
+  }
+  img {
+    border: solid black 1px;
+    box-shadow: 5px 5px 5px #000000;
+    -moz-box-shadow: 5px 5px 5px #000000;
+    -webkit-box-shadow: 5px 5px 5px #000000;
+  }
+  article {
+    background-color: #C4D0BB;
+    color: #010300;
+  }
+  a {
+    color: #010300;
+  }
+  a:hover {
+    color: #272F21;
+    font-size: 16px;
+  }
+  article a {
+    color: #010300;
+  }
+  article a:hover {
+    color: #272F21;
+  }
+  /* Module Styling */
+    /* Articles Template */
+    .article-title {
+    	font-size: 18px;
+    	color: #071100;
+    }
+    .article-meta-information {
+    	line-height: 16px;
+    	font-size: 10px;
+    }
