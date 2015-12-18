@@ -1,8 +1,7 @@
 /* Theme Specific Styling */
 @font-face {
   font-family: 'Tron';
-  src: url('fonts/tr2n-webfont.eot'),
-    url("fonts/tr2n-webfont.woff") format("woff"),
+  src: url("fonts/tr2n-webfont.woff") format("woff"),
     url("fonts/tr2n-webfont.svg#tr2ntr2n") format("svg");
 }
 /* Base Styling */

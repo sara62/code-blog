@@ -1,52 +1,153 @@
 /* The Site Object */
 var Site = function(siteTitle,contentDirectoryPath) {
   this.model(siteTitle,contentDirectoryPath);
-  this.view();
-  this.controller();
-  this.router();
+  var loading = false;
+  var viewLoaded = false;
+  var controllerLoaded = false;
+  var routerLoaded = false;
+  var that = this;
+  var setup = setInterval(function() {
+    if (that.loaded) {
+      if (!loading && !viewLoaded) {
+        loading = true;
+        that.view();
+        viewLoaded = true;
+        loading = false;
+      } else if (!loading && !controllerLoaded) {
+        loading = true;
+        that.controller();
+        controllerLoaded = true;
+        loading = false;
+      } else if (!loading && !routerLoaded) {
+        loading = true;
+        that.router();
+        routerLoaded = true;
+        loading = false;
+      } else if (viewLoaded && controllerLoaded && routerLoaded) {
+        console.log('SITE: The site has been fully instantiated.');
+        clearInterval(setup);
+      }
+    }
+  },10);
 };
 Site.prototype.model = function(siteTitle,contentDirectoryPath) {
   this.title = siteTitle;
   this.renderedOnce = false;
   this.container = $('main');
-  this.ajax = new AjaxHandler();
-  this.templates = new Templates(this.ajax);
   this.contentURL = contentDirectoryPath + 'content.json';
   this.socialURL = contentDirectoryPath + 'social.json';
   this.versionURL = contentDirectoryPath + 'version.txt';
-  this.socialDataLoaded = false;
-  this.contentDataLoaded = false;
-  this.versionDataLoaded = false;
   this.templatesLoaded = false;
-  if (localStorage.getItem('contentDataVersion') === null) {
-    this.contentDataVersion = this.ajax.getData(this.versionURL,false);
-    localStorage.setItem('contentDataVersion',this.contentDataVersion);
-  } else {
-    this.contentDataVersion = localStorage.getItem('contentDataVersion');
-  }
-  if (this.ajax.checkForContentUpdate(this.contentDataVersion,this.versionURL)) {
-    this.contentData = this.ajax.getJSON(this.contentURL,false);
-    this.socialData = this.ajax.getJSON(this.socialURL,false);
-    this.contentDataVersion = this.ajax.getData(this.versionURL,false);
-    localStorage.setItem('contentData',JSON.stringify(this.contentData));
-    localStorage.setItem('socialData',JSON.stringify(this.socialData));
-    localStorage.setItem('contentDataVersion',this.contentDataVersion);
-  } else {
-    if (localStorage.getItem('contentData') === null) {
-      this.contentData = this.ajax.getJSON(this.contentURL,false);
-      localStorage.setItem('contentData',JSON.stringify(this.contentData));
-    } else {
-      this.contentData = JSON.parse(localStorage.getItem('contentData'));
-    }
-    if (localStorage.getItem('socialData') === null) {
-      this.socialData = this.ajax.getJSON(this.socialURL,false);
-      localStorage.setItem('socialData',JSON.stringify(this.socialData));
-    } else {
-      this.socialData = JSON.parse(localStorage.getItem('socialData'));
-    }
-  }
-  this.getCurrentPage();
+  this.contentDataVersion = '';
+  this.contentData = '';
+  this.socialData = '';
+  this.dataLoading = false;
+  this.templates = new Templates(this);
+  var templates = this.templates;
   this.pages = [];
+  this.loaded = false;
+  var that = this;
+  var templatesLoaded = false;
+  var versionLoaded = false;
+  var contentLoaded = false;
+  var socialLoaded = false;
+  var loading = setInterval(function() {
+    if (that.templates.loaded) {
+      if(!templatesLoaded) {
+        console.log('SITE: Templates loaded successfully.  Proceeding to load the content data version.');
+        templatesLoaded = true;
+      } else if (!that.dataLoading && !versionLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.versionURL, success: function() {
+          console.log('SITE: Returning data from ' + that.versionURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve data from ' + that.versionURL);
+        }}).done(function(data) {
+          that.setContentDataVersion(data.toString());
+          versionLoaded = true;console.log('SITE: Content data version loaded successfully.  The current version is "' + that.contentDataVersion + '".  Proceeding to load the content data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !contentLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.contentURL, dataType: 'json', success: function() {
+          console.log('SITE: Returning JSON data from ' + that.contentURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.contentURL);
+        }}).done(function(data) {
+          that.setContentData(data);
+          contentLoaded = true;
+          console.log('SITE: Content data loaded successfully.  Proceeding to load the social media links data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !socialLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.socialURL, dataType: 'json', success: function() {
+          console.log('SITE: Returning JSON data from ' + that.socialURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.socialURL);
+        }}).done(function(data) {
+          that.setSocialData(data);
+          socialLoaded = true;
+          console.log('SITE: Social links\' data loaded successfully.');
+          that.dataLoading = false;
+        });
+      }
+    }
+    if (templatesLoaded && versionLoaded && contentLoaded && socialLoaded) {
+      that.isLoaded();
+      console.log('SITE: All site content has been loaded successfully.  Ready to generate pages.');
+      clearInterval(loading);
+    }
+  },10);
+  this.getCurrentPage();
+  this.currentVersion = '';
+  this.currentContentDataVersionLoaded = false;
+  this.updateLoading = false;
+  this.updateResolutionLoading = false;
+  this.contentUpdateExists = false;
+  this.contentUpdateCheckResolved = false;
+  this.updateContentDataLoaded = false;
+  this.updateSocialDataLoaded = false;
+};
+Site.prototype.setUpdateContentDataLoaded = function(data) {
+  this.updateContentDataLoaded = data;
+};
+Site.prototype.setUpdateSocialDataLoaded = function(data) {
+  this.updateSocialDataLoaded = data;
+};
+Site.prototype.setCurrentVersion = function(data) {
+  this.currentVersion = data;
+};
+Site.prototype.setCurrentContentDataVersionLoaded = function(data) {
+  this.currentContentDataVersionLoaded = data;
+};
+Site.prototype.setUpdateLoading = function(data) {
+  this.updateLoading = data;
+};
+Site.prototype.setUpdateResolutionLoading = function(data) {
+  this.updateResolutionLoading = data;
+};
+Site.prototype.setContentUpdateExists = function(data) {
+  this.contentUpdateExists = data;
+};
+Site.prototype.setContentUpdateCheckResolved = function(data) {
+  this.contentUpdateCheckResolved = data;
+};
+Site.prototype.setContentDataVersion = function(data) {
+  this.contentDataVersion = data;
+  this.contentDataVersionIsLoaded = true;
+  localStorage.setItem('contentDataVersion',this.contentDataVersion);
+};
+Site.prototype.setContentData = function(data) {
+  this.contentData = data;
+  localStorage.setItem('contentData',JSON.stringify(this.contentData));
+};
+Site.prototype.setSocialData = function(data) {
+  this.socialData = data;
+  localStorage.setItem('socialData',JSON.stringify(this.socialData));
+};
+Site.prototype.isLoaded = function() {
+  this.loaded = true;
 };
 Site.prototype.view = function() {
   $('#site-title a').text(this.title);
@@ -61,41 +162,106 @@ Site.prototype.view = function() {
 };
 Site.prototype.controller = function() {
   var site = this;
-  window.setInterval(function() {
-    if (site.renderedOnce) {
-      if (site.ajax.checkForContentUpdate(site.contentDataVersion,site.versionURL)) {
-        site.contentData = site.ajax.getJSON(site.contentURL,false);
-        site.socialData = site.ajax.getJSON(site.socialURL,false);
-        site.contentDataVersion = site.ajax.getData(site.versionURL,false);
-        localStorage.setItem('contentData',JSON.stringify(site.contentData));
-        localStorage.setItem('socialData',JSON.stringify(site.socialData));
-        localStorage.setItem('contentDataVersion',site.contentDataVersion);
-        site.navigation.updateSocialLinks(site.socialData);
-        var newPages = [];
-        for (i = 0; i < site.contentData.pages.length; i++) {
-          var counter = i;
-          var pageHasBeenMade = false;
-          var pageIndex = '';
-          for (j = 0; j < site.pages.length; j++) {
-            if (site.pages[j].pageId.toString() === site.contentData.pages[i].id.toString()) {
-              pageHasBeenMade = true;
-              pageIndex = j;
-            }
-          }
-          if (pageHasBeenMade) {
-            site.pages[pageIndex].generatePage(site.contentData.pages[i]);
-            newPages.push(site.pages[pageIndex]);
-          } else {
-            var page = new Page(site,site.contentData.pages[i]);
-            newPages.push(page);
-          }
-          i = counter;
+  var contentUpdateCheck = setInterval(function() {
+    if (site.renderedOnce && !site.contentUpdatExists) {
+      if (!site.updateResolutionLoading && !site.currentContentDataVersionLoaded) {
+        site.setUpdateResolutionLoading(true);
+        $.ajax({url: site.versionURL, success: function() {
+          console.log('SITE: Returning data from ' + site.versionURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve data from ' + site.versionURL);
+        }}).done(function(data) {
+          site.setCurrentVersion(data.toString());
+          site.setCurrentContentDataVersionLoaded(true);
+          site.setUpdateResolutionLoading(false);
+        });
+      } else if (site.currentContentDataVersionLoaded && !site.contentUpdateCheckResolved) {
+        if (site.currentVersion.toString() !== site.contentDataVersion.toString()) {
+          console.log('SITE: Check For Content Update: Content version change detected.');
+          site.setContentUpdateExists(true);
+          site.setContentUpdateCheckResolved(true);
+        } else {
+          console.log('SITE: Check For Content Update: No content version change.');
+          site.setContentUpdateCheckResolved(true);
         }
-        site.pages = newPages;
       }
     }
-  },5000);
-  window.setInterval(function() {
+  },100);
+  var updateContent = setInterval(function() {
+    if (site.renderedOnce && site.contentUpdateCheckResolved) {
+      if (site.contentUpdateExists) {
+        site.contentDataVersion = site.currentVersion;
+        localStorage.setItem('contentDataVersion',site.contentDataVersion);
+        if (!site.updateLoading && !site.updateContentDataLoaded) {
+          site.setUpdateLoading(true);
+          $.ajax({url: site.contentURL, dataType: 'json', success: function() {
+            console.log('SITE: Returning JSON data from ' + site.contentURL);
+          }, error: function() {
+            console.log('SITE: Failure when attempting to retrieve JSON data from ' + site.contentURL);
+          }}).done(function(data) {
+            site.setContentData(data);
+            site.setUpdateContentDataLoaded(true);
+            console.log('SITE: Updated content data loaded successfully.  Proceeding to load the updated social media links data.');
+            site.setUpdateLoading(false);
+          });
+        } else if (!site.updateLoading && !site.updateSocialDataLoaded) {
+          site.setUpdateLoading(true);
+          $.ajax({url: site.socialURL, dataType: 'json', success: function() {
+            console.log('SITE: Returning JSON data from ' + site.socialURL);
+          }, error: function() {
+            console.log('SITE: Failure when attempting to retrieve JSON data from ' + site.socialURL);
+          }}).done(function(data) {
+            site.setSocialData(data);
+            site.setUpdateSocialDataLoaded(true);
+            console.log('SITE: Updated social media links\' data loaded successfully.');
+            site.setUpdateLoading(false);
+          });
+        } else if (!site.updateLoading && site.updateContentDataLoaded && site.updateSocialDataLoaded) {
+          site.setUpdateLoading(true);
+          console.log('SITE: Updated content and social media links\' data loaded successfully.  Proceeding to update the view.');
+          site.navigation.updateSocialLinks(site.socialData);
+          var newPages = [];
+          for (i = 0; i < site.contentData.pages.length; i++) {
+            var counter = i;
+            var pageHasBeenMade = false;
+            var pageIndex = '';
+            for (j = 0; j < site.pages.length; j++) {
+              if (site.pages[j].pageId.toString() === site.contentData.pages[i].id.toString()) {
+                pageHasBeenMade = true;
+                pageIndex = j;
+              }
+            }
+            if (pageHasBeenMade) {
+              site.pages[pageIndex].generatePage(site.contentData.pages[i]);
+              newPages.push(site.pages[pageIndex]);
+            } else {
+              var page = new Page(site,site.contentData.pages[i]);
+              newPages.push(page);
+            }
+            i = counter;
+          }
+          site.pages = newPages;
+          console.log('SITE: Updated the view with new content and social media link\'s data successfully.');
+          site.setContentUpdateCheckResolved(false);
+          site.setCurrentContentDataVersionLoaded(false);
+          site.setContentUpdateExists(false);
+          site.setUpdateContentDataLoaded(false);
+          site.setUpdateSocialDataLoaded(false);
+          site.setUpdateLoading(false);
+        }
+      } else if (!site.contentUpdateExists && site.contentUpdateCheckResolved) {
+        site.setContentUpdateCheckResolved(false);
+        site.setCurrentContentDataVersionLoaded(false);
+        site.setContentUpdateCheckResolved(false);
+        site.setCurrentContentDataVersionLoaded(false);
+        site.setContentUpdateExists(false);
+        site.setUpdateContentDataLoaded(false);
+        site.setUpdateSocialDataLoaded(false);
+        site.setUpdateLoading(false);
+      }
+    }
+  },1000);
+  var updateAddressBarURL = setInterval(function() {
     site.currentPage = window.location.href;
     var hashId = site.currentPage.lastIndexOf('#');
     if (hashId === -1) {
@@ -208,7 +374,7 @@ Navigation.prototype.view = function(socialData) {
 Navigation.prototype.controller = function() {
   var menuOffScreen = (-1 * ($('#mobile-menu').find('.site-menu').width())) - 5;
   $('#navigation').on('click','.hamburger-menu',function(event) {
-    event.preventDefault();
+    event.defaultPrevented();
     if ($('#mobile-menu').css('width') !== '0px') {
       $('#mobile-menu').find('.hamburger-menu').rotate({duration:500,angle: 90,animateTo:0});
       $('#mobile-menu').css('width','0px');
@@ -255,70 +421,67 @@ Navigation.prototype.updateSocialLinks = function(data) {
   $('.nav-social-link-item').remove();
   this.view(data);
 };
-/* The AjaxHandler Object */
-var AjaxHandler = function() {};
-AjaxHandler.prototype.getData = function(URL,ASYNC) {
-  var output = 'failure';
-  $.ajax({url: URL, success: function(result) {
-    console.log('Get Data: Returning data from ' + URL);
-    output = result.toString();
-  }, async: ASYNC, error: function() {
-    console.log('Get Data: Failure when attempting to retrieve data from ' + URL);
-  }});
-  return output;
-};
-AjaxHandler.prototype.getData2 = function(URL,ASYNC) {
-  $.ajax({url: URL, success: function(result) {
-    console.log('Get Data: Returning data from ' + URL);
-  }, async: ASYNC, error: function() {
-    console.log('Get Data: Failure when attempting to retrieve data from ' + URL);
-  }}).done(function(data) {
-    return data.toString();
-  });
-};
-AjaxHandler.prototype.getJSON = function(URL,ASYNC) {
-  var output = '';
-  $.ajax({url: URL, dataType:'json', success: function(result) {
-    console.log('Get JSON: Successfully retrieved data from ' + URL);
-    output = result;
-  }, async: ASYNC, error: function() {
-    console.log('Get JSON: Failure when attempting to retrieve JSON from ' + URL);
-  }});
-  return output;
-};
-AjaxHandler.prototype.getTemplate = function(template) {
-  var URL = ('data/templates/' + template + '.html');
-  var data = this.getData(URL,false);
-  var $template = $(data);
-  if (data !== '') {
-    console.log('Get Template: Successfully loaded the \'' + template + '\' template.');
-  } else {
-    console.log('Get Template: Failed to load the \'' + template + '\' template.');
-  }
-  return $template;
-};
-AjaxHandler.prototype.checkForContentUpdate = function(currentVersion,versionURL) {
-  console.log('Check For Content Update: Downloading the current content version to check for alteration.');
-  var version = this.getData(versionURL,false);
-  if (version.toString() !== currentVersion.toString()) {
-    console.log('Check For Content Update: Content version change detected.');
-    return true;
-  } else {
-    console.log('Check For Content Update: No content version change.');
-    return false;
-  }
-};
 /* The Templates Object */
-var Templates = function(ajaxObj) {
+var Templates = function(site) {
+  site.dataLoading = true;
   this.templates = [];
-  this.templates['basic-articles'] = ajaxObj.getTemplate('basic-articles');
-  this.templates['author-articles'] = ajaxObj.getTemplate('author-articles');
-  this.templates['basic-article-filters'] = ajaxObj.getTemplate('basic-article-filters');
-  this.templates['basic-page'] = ajaxObj.getTemplate('basic-page');
-  this.templates['reference-page'] = ajaxObj.getTemplate('reference-page');
-  this.templates['navigation-link'] = ajaxObj.getTemplate('navigation-link');
-  this.templates['navigation-social-link'] = ajaxObj.getTemplate('navigation-social-link');
-  this.templates['author-statistic'] = ajaxObj.getTemplate('author-statistic');
+  this.templates.push('basic-articles');
+  this.templates.push('author-articles');
+  this.templates.push('basic-article-filters');
+  this.templates.push('basic-page');
+  this.templates.push('reference-page');
+  this.templates.push('navigation-link');
+  this.templates.push('navigation-social-link');
+  this.templates.push('author-statistic');
+  for (i = 0; i < this.templates.length; i++) {
+    this.templates[this.templates[i]] = 'NULL';
+  }
+  var that = this;
+  var templateLoading = false;
+  var templateCounter = 0;
+  var loader = setInterval(function() {
+    if ((!templateLoading) && (templateCounter < that.templates.length)) {
+      templateLoading = true;
+      var URL = ('data/templates/' + that.templates[templateCounter] + '.html');
+      var template = that.templates[templateCounter];
+      $.ajax({url: URL, success: function() {
+        console.log('TEMPLATES: Returning data from ' + URL);
+      }, error: function() {
+        console.log('TEMPLATES: Failure when attempting to retrieve data from ' + URL);
+      }}).done(function(data) {
+        that.setTemplate(template,data.toString());
+        templateCounter++;
+        templateLoading = false;
+      });
+    } else if (templateCounter === that.templates.length) {
+      console.log('TEMPLATES: Templates\' data has been fully loaded via Ajax.');
+      clearInterval(loader);
+    }
+  },10);
+  this.loaded = false;
+  that = this;
+  var loading = setInterval(function() {
+    var load = true;
+    console.log('TEMPLATES: Starting Template Load Check Loop');
+    for (i = 0; i < that.templates.length; i++) {
+      if (that.templates[that.templates[i]] === 'NULL') {
+        console.log('TEMPLATES: ' + that.templates[i] + ' template not loaded.');
+        load = false;
+      }
+    }
+    if (load) {
+      console.log('TEMPLATES: Templates successfully loaded and ready for manipulation.');
+      that.isLoaded();
+      site.dataLoading = false;
+      clearInterval(loading);
+    }
+  },10);
+};
+Templates.prototype.setTemplate = function(template,data) {
+  this.templates[template] = $(data);
+};
+Templates.prototype.isLoaded = function () {
+  this.loaded = true;
 };
 Templates.prototype.getTemplate = function(template) {
   return this.templates[template];
