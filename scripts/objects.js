@@ -186,7 +186,7 @@ Site.prototype.controller = function() {
         }
       }
     }
-  },100);
+  },60000);
   var updateContent = setInterval(function() {
     if (site.renderedOnce && site.contentUpdateCheckResolved) {
       if (site.contentUpdateExists) {
@@ -260,7 +260,7 @@ Site.prototype.controller = function() {
         site.setUpdateLoading(false);
       }
     }
-  },1000);
+  },60000);
   var updateAddressBarURL = setInterval(function() {
     site.currentPage = window.location.href;
     var hashId = site.currentPage.lastIndexOf('#');
