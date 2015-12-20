@@ -1,5 +1,6 @@
 /* The Site Object */
 var Site = function(siteTitle,contentDirectoryPath) {
+  this.preView(siteTitle,true);
   this.model(siteTitle,contentDirectoryPath);
   var loading = false;
   var viewLoaded = false;
@@ -10,6 +11,7 @@ var Site = function(siteTitle,contentDirectoryPath) {
     if (that.loaded) {
       if (!loading && !viewLoaded) {
         loading = true;
+        that.preView(siteTitle,false);
         that.view();
         viewLoaded = true;
         loading = false;
@@ -291,10 +293,25 @@ Site.prototype.changePage = function() {
     } else {
       var pageTitle = window.location.href.substring(hashIndex,window.location.href.length);
       var subPageTitle = '';
+      var filterValue = '';
+      var filterType = '';
       if (pageTitle.indexOf('-') > -1) {
-        subPageTitle = pageTitle.substring((pageTitle.indexOf('-') + 1),pageTitle.length);
+        if (pageTitle.indexOf('+') > -1)
+        {
+          subPageTitle = pageTitle.substring((pageTitle.indexOf('-') + 1),pageTitle.length);
+          filterValue = subPageTitle.substring((subPageTitle.indexOf('=') + 1),subPageTitle.length);
+          filterType = pageTitle.substring((pageTitle.indexOf('+') + 1),pageTitle.indexOf('='));
+          subPageTitle = subPageTitle.substring(0,plusIndex);
+        } else {
+          subPageTitle = pageTitle.substring((pageTitle.indexOf('-') + 1),pageTitle.length);
+        }
         pageTitle = pageTitle.substring(0,pageTitle.indexOf('-'));
+      } else if (pageTitle.indexOf('+') > -1) {
+        filterValue = pageTitle.substring((pageTitle.indexOf('=') + 1),pageTitle.length);
+        filterType = pageTitle.substring((pageTitle.indexOf('+') + 1),pageTitle.indexOf('='));
+        pageTitle = pageTitle.substring(0,pageTitle.indexOf('+'));
       }
+      filterValue = filterValue.replace(/_/g,' ');
       $('main').children().hide();
       if ($((pageTitle + '-container')).length) {
         if (subPageTitle === '') {
@@ -317,8 +334,32 @@ Site.prototype.changePage = function() {
         }
         $('.filters').hide();
         $((pageTitle + ' .filters')).show();
-        $((pageTitle + ' .author-filter .filter-select')).val('All Authors');
-        $((pageTitle + ' .category-filter .filter-select')).val('All Categories');
+        if (filterType === 'Author') {
+          $((pageTitle + ' .author-filter .filter-select')).val(filterValue);
+          $((pageTitle + '-container article')).each(function() {
+            var articleAuthor = $(this).find('.article-author').text();
+            if (articleAuthor !== filterValue) {
+              $((pageTitle + '-container')).find('article .article-content :not(:first-child)').hide();
+              $((pageTitle + '-container')).find('.read-more').show();
+              $(this).hide();
+            }
+          });
+        } else {
+          $((pageTitle + ' .author-filter .filter-select')).val('All Authors');
+        }
+        if (filterType === 'Category') {
+          $((pageTitle + ' .category-filter .filter-select')).val(filterValue);
+          $((pageTitle + '-container article')).each(function() {
+            var articleCategory = $(this).find('.article-category').text();
+            if (articleCategory !== filterValue) {
+              $((pageTitle + '-container')).find('article .article-content :not(:first-child)').hide();
+              $((pageTitle + '-container')).find('.read-more').show();
+              $(this).hide();
+            }
+          });
+        } else {
+          $((pageTitle + ' .category-filter .filter-select')).val('All Categories');
+        }
       } else {
         $('.filters').hide();
       }
@@ -355,6 +396,15 @@ Site.prototype.getCurrentPage = function() {
   }
   return this.currentPage;
 };
+Site.prototype.preView = function(siteTitle,show) {
+  if (show) {
+    $('#site-title a').text(siteTitle);
+    $('header').append('<img class="pre-loader" src="images/loader.gif" width="120" height="120"/>');
+    $('.pre-loader').css('margin-left',((($('html').width() / 2) - 12.5) + 'px'));
+  } else if (!show) {
+    $('.pre-loader').remove();
+  }
+};
 /* The Navigation Object */
 var Navigation = function(socialData,siteTemplates) {
   this.model(siteTemplates);
@@ -374,7 +424,7 @@ Navigation.prototype.view = function(socialData) {
 Navigation.prototype.controller = function() {
   var menuOffScreen = (-1 * ($('#mobile-menu').find('.site-menu').width())) - 5;
   $('#navigation').on('click','.hamburger-menu',function(event) {
-    event.defaultPrevented();
+    event.defaultPrevented;
     if ($('#mobile-menu').css('width') !== '0px') {
       $('#mobile-menu').find('.hamburger-menu').rotate({duration:500,angle: 90,animateTo:0});
       $('#mobile-menu').css('width','0px');
@@ -796,32 +846,46 @@ Page.prototype.resetPageActions = function() {
     });
     $filters.find('.author-filter').on('change',function() {
       $filters.find('.category-filter .filter-select').val('All Categories');
-      $articles.show();
       var selection = $filters.find('.author-filter option:selected').attr('value');
+      var newURL = window.location.href;
       if (selection !== 'All Authors') {
-        $articles.each(function() {
-          var articleAuthor = $(this).find('.article-author').text();
-          if (articleAuthor !== selection) {
-            $articleContainer.find('article .article-content :not(:first-child)').hide();
-            $articleContainer.find('.read-more').show();
-            $(this).hide();
-          }
-        });
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL + '+Author=' + selection.replace(/ /g,'_');
+      } else {
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL;
       }
     });
     $filters.find('.category-filter').on('change',function() {
       $filters.find('.author-filter .filter-select').val('All Authors');
-      $articles.show();
       var selection = $filters.find('.category-filter option:selected').attr('value');
+      var newURL = window.location.href;
       if (selection !== 'All Categories') {
-        $articles.each(function() {
-          var articleCategory = $(this).find('.article-category span').text();
-          if (articleCategory !== selection) {
-            $articleContainer.find('article .article-content :not(:first-child)').hide();
-            $articleContainer.find('.read-more').show();
-            $(this).hide();
-          }
-        });
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL + '+Category=' + selection.replace(/ /g,'_');
+      } else {
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL;
       }
     });
   }
