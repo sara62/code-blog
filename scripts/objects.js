@@ -1,3 +1,4 @@
+var githubToken = '';
 /* The Site Object */
 var Site = function(siteTitle,contentDirectoryPath) {
   this.preView(siteTitle,true);
@@ -37,11 +38,15 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
   this.renderedOnce = false;
   this.container = $('main');
   this.contentURL = contentDirectoryPath + 'content.json';
+  this.githubReposURL = 'https://api.github.com/users/jhm90/repos';
+  this.githubURL = 'https://api.github.com/users/jhm90';
   this.socialURL = contentDirectoryPath + 'social.json';
   this.versionURL = contentDirectoryPath + 'version.txt';
   this.templatesLoaded = false;
   this.contentDataVersion = '';
   this.contentData = '';
+  this.githubReposData = '';
+  this.githubData = '';
   this.socialData = '';
   this.dataLoading = false;
   this.templates = new Templates(this);
@@ -52,6 +57,8 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
   var templatesLoaded = false;
   var versionLoaded = false;
   var contentLoaded = false;
+  var githubReposLoaded = false;
+  var githubLoaded = false;
   var socialLoaded = false;
   var loading = setInterval(function() {
     if (that.templates.loaded) {
@@ -78,7 +85,31 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
         }}).done(function(data) {
           that.setContentData(data);
           contentLoaded = true;
-          console.log('SITE: Content data loaded successfully.  Proceeding to load the social media links data.');
+          console.log('SITE: Content data loaded successfully.  Proceeding to load the Github data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !githubLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.githubURL, dataType: 'json', headers: { Authorization: 'token ' + githubToken }, success: function() {
+          console.log('SITE: Returning JSON data from ' + that.githubURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubURL);
+        }}).done(function(data) {
+          that.setGithubData(data);
+          githubLoaded = true;
+          console.log('SITE: Github data loaded successfully.  Proceeding to load the social media links data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !githubReposLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.githubReposURL, dataType: 'json', headers: { Authorization: 'token ' + githubToken }, success: function() {
+          console.log('SITE: Returning JSON data from ' + that.githubReposURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubReposURL);
+        }}).done(function(data) {
+          that.setGithubReposData(data);
+          githubReposLoaded = true;
+          console.log('SITE: Github data loaded successfully.  Proceeding to load the social media links data.');
           that.dataLoading = false;
         });
       } else if (!that.dataLoading && !socialLoaded) {
@@ -110,6 +141,12 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
   this.contentUpdateCheckResolved = false;
   this.updateContentDataLoaded = false;
   this.updateSocialDataLoaded = false;
+};
+Site.prototype.setGithubReposData = function(data) {
+  this.githubReposData = data;
+};
+Site.prototype.setGithubData = function(data) {
+  this.githubData = data;
 };
 Site.prototype.setUpdateContentDataLoaded = function(data) {
   this.updateContentDataLoaded = data;
@@ -540,6 +577,21 @@ Templates.prototype.renderTemplate = function($template,context) {
   var handlebarTemplate = Handlebars.compile($template.html());
   return $(handlebarTemplate(context));
 };
+/* The GitHub Account Object */
+var GitHubAccount = function(data) {
+  this.model(data);
+  this.view();
+  this.controller();
+};
+GitHubAccount.prototype.model = function(data) {
+
+};
+GitHubAccount.prototype.view = function() {
+
+};
+GitHubAccount.prototype.controller = function() {
+
+};
 /* The Page Object */
 var Page = function(pageSite,pageData) {
   this.model(pageSite,pageData);
@@ -554,6 +606,8 @@ Page.prototype.model = function(pageSite,pageData) {
   this.displayStates = [];
   if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     this.contentData = this.setupArticleData();
+  } else if (this.pageType === 'github-about') {
+    this.contentData = this.setupGithubAboutInformation();
   }
   this.hasBeenRendered = false;
 };
@@ -562,6 +616,9 @@ Page.prototype.view = function() {
 };
 Page.prototype.controller = function() {
   this.site.pages.push(this);
+};
+Page.prototype.setupGithubAboutInformation = function() {
+
 };
 Page.prototype.setupArticleData = function() {
   var currentDate = new Date();
