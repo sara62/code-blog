@@ -1,7 +1,7 @@
 /* The Site Object */
-var Site = function(siteTitle,contentDirectoryPath) {
+var Site = function(siteTitle,contentDirectoryPath,githubUserName) {
   this.preView(siteTitle,true);
-  this.model(siteTitle,contentDirectoryPath);
+  this.model(siteTitle,contentDirectoryPath,githubUserName);
   var loading = false;
   var viewLoaded = false;
   var controllerLoaded = false;
@@ -32,12 +32,12 @@ var Site = function(siteTitle,contentDirectoryPath) {
     }
   },10);
 };
-Site.prototype.model = function(siteTitle,contentDirectoryPath) {
+Site.prototype.model = function(siteTitle,contentDirectoryPath,githubUserName) {
   this.title = siteTitle;
   this.renderedOnce = false;
   this.container = $('main');
   this.contentURL = contentDirectoryPath + 'content.json';
-  this.githubReposURL = 'https://api.github.com/users/jhm90/repos';
+  this.githubReposURL = 'https://api.github.com/users/' + githubUserName + '/repos?per_page=100&sort=updated';
   this.githubURL = 'https://api.github.com/users/jhm90';
   this.socialURL = contentDirectoryPath + 'social.json';
   this.versionURL = contentDirectoryPath + 'version.txt';
@@ -84,7 +84,7 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
         }}).done(function(data) {
           that.setContentData(data);
           contentLoaded = true;
-          console.log('SITE: Content data loaded successfully.  Proceeding to load the Github data.');
+          console.log('SITE: Content data loaded successfully.  Proceeding to load Github account data.');
           that.dataLoading = false;
         });
       } else if (!that.dataLoading && !githubLoaded) {
@@ -94,9 +94,10 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
         }, error: function() {
           console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubURL);
         }}).done(function(data) {
-          that.setGithubData(data);
+          var githubJSON = {'author':data.name.toString(),'publicRepoCount':data.public_repos.toString(),'authorUrl':data.html_url.toString()};
+          that.setGithubData(githubJSON);
           githubLoaded = true;
-          console.log('SITE: Github data loaded successfully.  Proceeding to load the social media links data.');
+          console.log('SITE: Github data loaded successfully.  Proceeding to load Github repos data.');
           that.dataLoading = false;
         });
       } else if (!that.dataLoading && !githubReposLoaded) {
@@ -106,7 +107,17 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
         }, error: function() {
           console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubReposURL);
         }}).done(function(data) {
-          that.setGithubReposData(data);
+          var githubReposJSON = [];
+          $.each(data,function(index,value) {
+            var githubRepoJSON = {'name':data[index].name.toString(),'repoUrl':data[index].html_url.toString(),'description':data[index].description.toString(),'creationDate':data[index].created_at.toString().substring(0,10),'lastUpdateDate':data[index].updated_at.toString().substring(0,10),'cloneUrl':data[index].clone_url.toString()};
+            if (data[index].fork.toString() === 'true') {
+              githubRepoJSON.isFork = 'true';
+            } else {
+              githubRepoJSON.isFork = '';
+            }
+            githubReposJSON.push(githubRepoJSON);
+          });
+          that.setGithubReposData(githubReposJSON);
           githubReposLoaded = true;
           console.log('SITE: Github data loaded successfully.  Proceeding to load the social media links data.');
           that.dataLoading = false;
@@ -125,8 +136,9 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
         });
       }
     }
-    if (templatesLoaded && versionLoaded && contentLoaded && socialLoaded) {
+    if (templatesLoaded && versionLoaded && contentLoaded && githubLoaded && githubReposLoaded && socialLoaded) {
       that.isLoaded();
+      that.setGithubAccount(that.githubData,that.githubReposData);
       console.log('SITE: All site content has been loaded successfully.  Ready to generate pages.');
       clearInterval(loading);
     }
@@ -140,6 +152,9 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath) {
   this.contentUpdateCheckResolved = false;
   this.updateContentDataLoaded = false;
   this.updateSocialDataLoaded = false;
+};
+Site.prototype.setGithubAccount = function(account,repos) {
+  this.githubAccount = new GithubAccount(account,repos);
 };
 Site.prototype.setGithubReposData = function(data) {
   this.githubReposData = data;
@@ -519,6 +534,7 @@ var Templates = function(site) {
   this.templates.push('navigation-link');
   this.templates.push('navigation-social-link');
   this.templates.push('author-statistic');
+  this.templates.push('github-about');
   for (i = 0; i < this.templates.length; i++) {
     this.templates[this.templates[i]] = 'NULL';
   }
@@ -576,21 +592,17 @@ Templates.prototype.renderTemplate = function($template,context) {
   var handlebarTemplate = Handlebars.compile($template.html());
   return $(handlebarTemplate(context));
 };
-/* The GitHub Account Object */
-var GitHubAccount = function(data) {
-  this.model(data);
+/* The GitHub Account Object - includes repos data.*/
+var GithubAccount = function(accountData,repoData) {
+  this.model(accountData,repoData);
   this.view();
   this.controller();
 };
-GitHubAccount.prototype.model = function(data) {
-
+GithubAccount.prototype.model = function(accountData,repoData) {
+  this.data = {'account':accountData,'repos':repoData};
 };
-GitHubAccount.prototype.view = function() {
-
-};
-GitHubAccount.prototype.controller = function() {
-
-};
+GithubAccount.prototype.view = function() {};
+GithubAccount.prototype.controller = function() {};
 /* The Page Object */
 var Page = function(pageSite,pageData) {
   this.model(pageSite,pageData);
@@ -606,7 +618,7 @@ Page.prototype.model = function(pageSite,pageData) {
   if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     this.contentData = this.setupArticleData();
   } else if (this.pageType === 'github-about') {
-    this.contentData = this.setupGithubAboutInformation();
+    this.setupGithubAboutInformation();
   }
   this.hasBeenRendered = false;
 };
@@ -617,7 +629,10 @@ Page.prototype.controller = function() {
   this.site.pages.push(this);
 };
 Page.prototype.setupGithubAboutInformation = function() {
-
+  this.contentData.author = this.site.githubAccount.data.account.author;
+  this.contentData.authorUrl = this.site.githubAccount.data.account.authorUrl;
+  this.contentData.publicRepoCount = this.site.githubAccount.data.account.publicRepoCount;
+  this.contentData.repos = this.site.githubAccount.data.repos;
 };
 Page.prototype.setupArticleData = function() {
   var currentDate = new Date();
@@ -680,6 +695,7 @@ Page.prototype.renderPage = function() {
   this.$obj = this.site.templates.getTemplate(this.pageType);
   this.$obj = this.site.templates.renderTemplate(this.$obj,this.contentData);
   $('main').find(elementId).remove();
+  this.$obj.hide();
   $('main').append(this.$obj);
 };
 Page.prototype.renderNavItem = function() {
@@ -759,8 +775,10 @@ Page.prototype.renderArticleFilters = function() {
     });
     $articleFilters = this.site.templates.renderTemplate($articleFilters,filterData);
     if ($('#mobile-menu').css('display') === 'none') {
+      $articleFilters.hide();
       $articleFilters.appendTo('#desktop-menu nav');
     } else {
+      $articleFilters.hide();
       $articleFilters.appendTo('header');
     }
     if (this.pageType === 'author-articles') {
@@ -781,8 +799,10 @@ Page.prototype.generatePage = function(pageData) {
   $(('.page-' + this.pageId)).remove();
   this.contentData = pageData;
   this.pageType = this.contentData.type;
-  if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
+  if (this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     this.contentData = this.setupArticleData();
+  } else if (this.pageType === 'github-about') {
+    this.setupGithubAboutInformation();
   }
   this.renderPage();
   this.renderNavItem();

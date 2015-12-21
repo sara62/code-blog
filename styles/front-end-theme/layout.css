@@ -52,6 +52,19 @@ img.pull-right {
 .basic-content {
 	padding: 20px 20px 20px 20px;
 }
+/* Github About Template */
+.github-about-title {
+	padding: 20px 20px 0px 20px;
+}
+.github-about-content {
+	padding: 20px 20px 0px 20px;
+}
+.github-about-repos {
+	padding: 40px 40px 0px 40px;
+}
+.github-about-repo {
+	padding: 20px 20px 0px 20px;
+}
 /* Reference Page Template */
 .reference-title {
 	padding: 20px 20px 0px 20px;

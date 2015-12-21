@@ -1,0 +1,20 @@
+<script type="text/x-handlebars-template" id="github-about-template">
+  <div id="{{title}}" class="page page-{{id}}">
+    <article class="github-about-page">
+      <div class="github-about-title"><h2>{{title}}</h2></div>
+      <div class="github-about-content">{{{content}}}</div>
+      <div class="github-about-repos">
+        <div><h3><a href="{{authorUrl}}" target="_blank">{{author}}'s {{publicRepoCount}} Github Repositories</a></h4></div>
+        {{#each repos}}
+          <div class="github-about-repo">
+            <div><h4>{{#if this.isFork}}Fork: {{/if}}<a href="{{repoURL}}" target="_blank">{{name}}</a></h4></div>
+            <div><span>Last Update: </span><span>{{lastUpdateDate}}</span></div>
+            <div><span>Created On: </span><span>{{creationDate}}</span></div>
+            <div><span>{{description}}</span></div>
+            <div><span>Clone URL: </span><span><a href="{{cloneUrl}}">{{cloneUrl}}</a></span></div>
+          </div>
+        {{/each}}
+      </div>
+    </article>
+  </div>
+</script>
