@@ -1,4 +1,3 @@
-var githubToken = '';
 /* The Site Object */
 var Site = function(siteTitle,contentDirectoryPath) {
   this.preView(siteTitle,true);
