@@ -7,7 +7,7 @@
         <div><h3><a href="{{authorUrl}}" target="_blank">{{author}}'s {{publicRepoCount}} Github Repositories</a></h4></div>
         {{#each repos}}
           <div class="github-about-repo">
-            <div><h4>{{#if this.isFork}}Fork: {{/if}}<a href="{{repoURL}}" target="_blank">{{name}}</a></h4></div>
+            <div><h4>{{#if this.isFork}}Fork: {{/if}}<a href="{{repoUrl}}" target="_blank">{{name}}</a></h4></div>
             <div><span>Last Update: </span><span>{{lastUpdateDate}}</span></div>
             <div><span>Created On: </span><span>{{creationDate}}</span></div>
             <div><span>{{description}}</span></div>
