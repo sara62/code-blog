@@ -37,8 +37,8 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath,githubUserName) {
   this.renderedOnce = false;
   this.container = $('main');
   this.contentURL = contentDirectoryPath + 'content.json';
-  this.githubReposURL = 'https://api.github.com/users/' + githubUserName + '/repos?per_page=100&sort=updated';
-  this.githubURL = 'https://api.github.com/users/jhm90';
+  this.githubReposURL = '/github/users/' + githubUserName + '/repos?per_page=100&sort=updated';
+  this.githubURL = '/github/users/' + githubUserName;
   this.socialURL = contentDirectoryPath + 'social.json';
   this.versionURL = contentDirectoryPath + 'version.txt';
   this.templatesLoaded = false;
@@ -89,7 +89,7 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath,githubUserName) {
         });
       } else if (!that.dataLoading && !githubLoaded) {
         that.dataLoading = true;
-        $.ajax({url: that.githubURL, dataType: 'json', headers: { Authorization: 'token ' + githubToken }, success: function() {
+        $.ajax({url: that.githubURL, type: 'GET', dataType: 'json', success: function() {
           console.log('SITE: Returning JSON data from ' + that.githubURL);
         }, error: function() {
           console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubURL);
@@ -102,7 +102,7 @@ Site.prototype.model = function(siteTitle,contentDirectoryPath,githubUserName) {
         });
       } else if (!that.dataLoading && !githubReposLoaded) {
         that.dataLoading = true;
-        $.ajax({url: that.githubReposURL, dataType: 'json', headers: { Authorization: 'token ' + githubToken }, success: function() {
+        $.ajax({url: that.githubReposURL, type: 'GET', dataType: 'json', success: function() {
           console.log('SITE: Returning JSON data from ' + that.githubReposURL);
         }, error: function() {
           console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubReposURL);

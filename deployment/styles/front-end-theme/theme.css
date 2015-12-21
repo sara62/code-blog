@@ -1,8 +1,7 @@
 /* Theme Specific Styling */
 @font-face {
   font-family: 'Tron';
-  src: url('fonts/tr2n-webfont.eot'),
-    url("fonts/tr2n-webfont.woff") format("woff"),
+  src: url("fonts/tr2n-webfont.woff") format("woff"),
     url("fonts/tr2n-webfont.svg#tr2ntr2n") format("svg");
 }
 /* Base Styling */
@@ -31,65 +30,57 @@
     font-size: 1em; !important;
   }
   html {
-    background-color: #010300;
+    background-color: #fff;
   }
   header {
-    background-color: #071100;
+    background-color: #fff;
   }
   body {
   	line-height: 18px;
   }
   img {
   	border: solid black 1px;
-  	box-shadow: 5px 5px 5px #000000;
-  	-moz-box-shadow: 5px 5px 5px #000000;
-  	-webkit-box-shadow: 5px 5px 5px #000000;
+  	box-shadow: 3px 3px 3px #000000;
+  	-moz-box-shadow: 3px 3px 3px #000000;
+  	-webkit-box-shadow: 3px 3px 3px #000000;
   }
   article {
-  	background-color: #C4D0BB;
-  	color: #010300;
+  	background-color: #fff;
+  	color: #000;
   }
   footer {
   	color: #A9A9A9;
   }
   a {
-  	color: #010300;
+  	color: #000;
   }
   a:hover {
-    color: #272F21;
-    font-size: 1.424em;
-  }
-  article a {
-    color: #010300;
-  }
-  article a:hover {
-    color: #272F21;
+    color: #A9A9A9;
   }
 /* Layout Styling */
   /* Site Title */
   #site-title {
   	font-weight: bold;
-  	color: #C4D0BB;
+  	color: #000;
   }
   #site-title a {
-  	color: #C4D0BB;
+  	color: #000;
   }
   #site-title a:hover {
   	color: #A9A9A9;
-  	font-size: 1.602em;
   }
   /* Icons */
   .icon {
   	box-shadow: 0px 0px 0px #000;
   	-moz-box-shadow: 0px 0px 0px #000;
   	-webkit-box-shadow: 0px 0px 0px #000;
-  	background-color: #071100;
+  	background-color: #fff;
   	border: 0px solid black;
   }
   /* Navigation Menus */
     /* Mobile Menu */
     .hamburger-menu {
-    	background-color: #C4D0BB;
+    	background-color: #fff;
     	font-size: 18px;
     	box-shadow: 0px 0px 0px #000;
     	-moz-box-shadow: 0px 0px 0px #000;
@@ -98,28 +89,20 @@
     }
     .hamburger-menu:hover {
     	background-color: #A9A9A9;
-    	font-size: 1.125em;
     }
     #mobile-menu .site-menu {
-    	background-color: #000000;
+    	background-color: #fff;
     	border: solid 1px #AAA;
     }
-    #mobile-menu .nav-link-item {
-    	border-bottom: solid 1px #AAA;
-    	-webkit-border-image: -webkit-linear-gradient(left, transparent, #AAA) 100% 1;
-    	-moz-border-image: -moz-linear-gradient(left, transparent, #AAA) 100% 1;
-    	-o-border-image: -o-linear-gradient(left, transparent, #AAA) 100% 1;
-    	border-image: linear-gradient(left, transparent, #AAA) 100% 1;
-    }
     #mobile-menu .nav-link-item a {
-    	color: #C4D0BB;
+    	color: #000;
     }
     #mobile-menu .nav-link-item a:hover {
     	color: #A9A9A9;
     }
     /* Desktop Menu */
     #desktop-menu nav div ul li a {
-    	color: #C4D0BB;
+    	color: #000;
     }
     #desktop-menu nav div ul li a:hover {
     	color: #A9A9A9;
@@ -128,7 +111,7 @@
   /* Articles Template */
   .article-title {
   	font-size: 18px;
-  	color: #071100;
+  	color: #000;
   }
   .article-meta-information {
   	line-height: 16px;
@@ -138,11 +121,15 @@
   .basic-title {
   	font-size: 18px;
   }
+  /* Github About Page Template */
+  .github-about-title {
+    font-size: 18px;
+  }
   /* Reference Page Template */
   .reference-title {
   	font-size: 18px;
   }
   /* Social Icons */
   #mobile-menu .octocat {
-  	background-color: #000;
+  	background-color: #fff;
   }

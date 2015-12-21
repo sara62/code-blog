@@ -1,52 +1,206 @@
 /* The Site Object */
-var Site = function(siteTitle,contentDirectoryPath) {
-  this.model(siteTitle,contentDirectoryPath);
-  this.view();
-  this.controller();
-  this.router();
+var Site = function(siteTitle,contentDirectoryPath,githubUserName) {
+  this.preView(siteTitle,true);
+  this.model(siteTitle,contentDirectoryPath,githubUserName);
+  var loading = false;
+  var viewLoaded = false;
+  var controllerLoaded = false;
+  var routerLoaded = false;
+  var that = this;
+  var setup = setInterval(function() {
+    if (that.loaded) {
+      if (!loading && !viewLoaded) {
+        loading = true;
+        that.preView(siteTitle,false);
+        that.view();
+        viewLoaded = true;
+        loading = false;
+      } else if (!loading && !controllerLoaded) {
+        loading = true;
+        that.controller();
+        controllerLoaded = true;
+        loading = false;
+      } else if (!loading && !routerLoaded) {
+        loading = true;
+        that.router();
+        routerLoaded = true;
+        loading = false;
+      } else if (viewLoaded && controllerLoaded && routerLoaded) {
+        console.log('SITE: The site has been fully instantiated.');
+        clearInterval(setup);
+      }
+    }
+  },10);
 };
-Site.prototype.model = function(siteTitle,contentDirectoryPath) {
+Site.prototype.model = function(siteTitle,contentDirectoryPath,githubUserName) {
   this.title = siteTitle;
   this.renderedOnce = false;
   this.container = $('main');
-  this.ajax = new AjaxHandler();
-  this.templates = new Templates(this.ajax);
   this.contentURL = contentDirectoryPath + 'content.json';
+  this.githubReposURL = '/github/users/' + githubUserName + '/repos?per_page=100&sort=updated';
+  this.githubURL = '/github/users/' + githubUserName;
   this.socialURL = contentDirectoryPath + 'social.json';
   this.versionURL = contentDirectoryPath + 'version.txt';
-  this.socialDataLoaded = false;
-  this.contentDataLoaded = false;
-  this.versionDataLoaded = false;
   this.templatesLoaded = false;
-  if (localStorage.getItem('contentDataVersion') === null) {
-    this.contentDataVersion = this.ajax.getData(this.versionURL,false);
-    localStorage.setItem('contentDataVersion',this.contentDataVersion);
-  } else {
-    this.contentDataVersion = localStorage.getItem('contentDataVersion');
-  }
-  if (this.ajax.checkForContentUpdate(this.contentDataVersion,this.versionURL)) {
-    this.contentData = this.ajax.getJSON(this.contentURL,false);
-    this.socialData = this.ajax.getJSON(this.socialURL,false);
-    this.contentDataVersion = this.ajax.getData(this.versionURL,false);
-    localStorage.setItem('contentData',JSON.stringify(this.contentData));
-    localStorage.setItem('socialData',JSON.stringify(this.socialData));
-    localStorage.setItem('contentDataVersion',this.contentDataVersion);
-  } else {
-    if (localStorage.getItem('contentData') === null) {
-      this.contentData = this.ajax.getJSON(this.contentURL,false);
-      localStorage.setItem('contentData',JSON.stringify(this.contentData));
-    } else {
-      this.contentData = JSON.parse(localStorage.getItem('contentData'));
-    }
-    if (localStorage.getItem('socialData') === null) {
-      this.socialData = this.ajax.getJSON(this.socialURL,false);
-      localStorage.setItem('socialData',JSON.stringify(this.socialData));
-    } else {
-      this.socialData = JSON.parse(localStorage.getItem('socialData'));
-    }
-  }
-  this.getCurrentPage();
+  this.contentDataVersion = '';
+  this.contentData = '';
+  this.githubReposData = '';
+  this.githubData = '';
+  this.socialData = '';
+  this.dataLoading = false;
+  this.templates = new Templates(this);
+  var templates = this.templates;
   this.pages = [];
+  this.loaded = false;
+  var that = this;
+  var templatesLoaded = false;
+  var versionLoaded = false;
+  var contentLoaded = false;
+  var githubReposLoaded = false;
+  var githubLoaded = false;
+  var socialLoaded = false;
+  var loading = setInterval(function() {
+    if (that.templates.loaded) {
+      if(!templatesLoaded) {
+        console.log('SITE: Templates loaded successfully.  Proceeding to load the content data version.');
+        templatesLoaded = true;
+      } else if (!that.dataLoading && !versionLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.versionURL, success: function() {
+          console.log('SITE: Returning data from ' + that.versionURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve data from ' + that.versionURL);
+        }}).done(function(data) {
+          that.setContentDataVersion(data.toString());
+          versionLoaded = true;console.log('SITE: Content data version loaded successfully.  The current version is "' + that.contentDataVersion + '".  Proceeding to load the content data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !contentLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.contentURL, dataType: 'json', success: function() {
+          console.log('SITE: Returning JSON data from ' + that.contentURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.contentURL);
+        }}).done(function(data) {
+          that.setContentData(data);
+          contentLoaded = true;
+          console.log('SITE: Content data loaded successfully.  Proceeding to load Github account data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !githubLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.githubURL, type: 'GET', dataType: 'json', success: function() {
+          console.log('SITE: Returning JSON data from ' + that.githubURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubURL);
+        }}).done(function(data) {
+          var githubJSON = {'author':data.name.toString(),'publicRepoCount':data.public_repos.toString(),'authorUrl':data.html_url.toString()};
+          that.setGithubData(githubJSON);
+          githubLoaded = true;
+          console.log('SITE: Github data loaded successfully.  Proceeding to load Github repos data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !githubReposLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.githubReposURL, type: 'GET', dataType: 'json', success: function() {
+          console.log('SITE: Returning JSON data from ' + that.githubReposURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.githubReposURL);
+        }}).done(function(data) {
+          var githubReposJSON = [];
+          $.each(data,function(index,value) {
+            var githubRepoJSON = {'name':data[index].name.toString(),'repoUrl':data[index].html_url.toString(),'description':data[index].description.toString(),'creationDate':data[index].created_at.toString().substring(0,10),'lastUpdateDate':data[index].updated_at.toString().substring(0,10),'cloneUrl':data[index].clone_url.toString()};
+            if (data[index].fork.toString() === 'true') {
+              githubRepoJSON.isFork = 'true';
+            } else {
+              githubRepoJSON.isFork = '';
+            }
+            githubReposJSON.push(githubRepoJSON);
+          });
+          that.setGithubReposData(githubReposJSON);
+          githubReposLoaded = true;
+          console.log('SITE: Github data loaded successfully.  Proceeding to load the social media links data.');
+          that.dataLoading = false;
+        });
+      } else if (!that.dataLoading && !socialLoaded) {
+        that.dataLoading = true;
+        $.ajax({url: that.socialURL, dataType: 'json', success: function() {
+          console.log('SITE: Returning JSON data from ' + that.socialURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve JSON data from ' + that.socialURL);
+        }}).done(function(data) {
+          that.setSocialData(data);
+          socialLoaded = true;
+          console.log('SITE: Social links\' data loaded successfully.');
+          that.dataLoading = false;
+        });
+      }
+    }
+    if (templatesLoaded && versionLoaded && contentLoaded && githubLoaded && githubReposLoaded && socialLoaded) {
+      that.isLoaded();
+      that.setGithubAccount(that.githubData,that.githubReposData);
+      console.log('SITE: All site content has been loaded successfully.  Ready to generate pages.');
+      clearInterval(loading);
+    }
+  },10);
+  this.getCurrentPage();
+  this.currentVersion = '';
+  this.currentContentDataVersionLoaded = false;
+  this.updateLoading = false;
+  this.updateResolutionLoading = false;
+  this.contentUpdateExists = false;
+  this.contentUpdateCheckResolved = false;
+  this.updateContentDataLoaded = false;
+  this.updateSocialDataLoaded = false;
+};
+Site.prototype.setGithubAccount = function(account,repos) {
+  this.githubAccount = new GithubAccount(account,repos);
+};
+Site.prototype.setGithubReposData = function(data) {
+  this.githubReposData = data;
+};
+Site.prototype.setGithubData = function(data) {
+  this.githubData = data;
+};
+Site.prototype.setUpdateContentDataLoaded = function(data) {
+  this.updateContentDataLoaded = data;
+};
+Site.prototype.setUpdateSocialDataLoaded = function(data) {
+  this.updateSocialDataLoaded = data;
+};
+Site.prototype.setCurrentVersion = function(data) {
+  this.currentVersion = data;
+};
+Site.prototype.setCurrentContentDataVersionLoaded = function(data) {
+  this.currentContentDataVersionLoaded = data;
+};
+Site.prototype.setUpdateLoading = function(data) {
+  this.updateLoading = data;
+};
+Site.prototype.setUpdateResolutionLoading = function(data) {
+  this.updateResolutionLoading = data;
+};
+Site.prototype.setContentUpdateExists = function(data) {
+  this.contentUpdateExists = data;
+};
+Site.prototype.setContentUpdateCheckResolved = function(data) {
+  this.contentUpdateCheckResolved = data;
+};
+Site.prototype.setContentDataVersion = function(data) {
+  this.contentDataVersion = data;
+  this.contentDataVersionIsLoaded = true;
+  localStorage.setItem('contentDataVersion',this.contentDataVersion);
+};
+Site.prototype.setContentData = function(data) {
+  this.contentData = data;
+  localStorage.setItem('contentData',JSON.stringify(this.contentData));
+};
+Site.prototype.setSocialData = function(data) {
+  this.socialData = data;
+  localStorage.setItem('socialData',JSON.stringify(this.socialData));
+};
+Site.prototype.isLoaded = function() {
+  this.loaded = true;
 };
 Site.prototype.view = function() {
   $('#site-title a').text(this.title);
@@ -61,41 +215,106 @@ Site.prototype.view = function() {
 };
 Site.prototype.controller = function() {
   var site = this;
-  window.setInterval(function() {
-    if (site.renderedOnce) {
-      if (site.ajax.checkForContentUpdate(site.contentDataVersion,site.versionURL)) {
-        site.contentData = site.ajax.getJSON(site.contentURL,false);
-        site.socialData = site.ajax.getJSON(site.socialURL,false);
-        site.contentDataVersion = site.ajax.getData(site.versionURL,false);
-        localStorage.setItem('contentData',JSON.stringify(site.contentData));
-        localStorage.setItem('socialData',JSON.stringify(site.socialData));
-        localStorage.setItem('contentDataVersion',site.contentDataVersion);
-        site.navigation.updateSocialLinks(site.socialData);
-        var newPages = [];
-        for (i = 0; i < site.contentData.pages.length; i++) {
-          var counter = i;
-          var pageHasBeenMade = false;
-          var pageIndex = '';
-          for (j = 0; j < site.pages.length; j++) {
-            if (site.pages[j].pageId.toString() === site.contentData.pages[i].id.toString()) {
-              pageHasBeenMade = true;
-              pageIndex = j;
-            }
-          }
-          if (pageHasBeenMade) {
-            site.pages[pageIndex].generatePage(site.contentData.pages[i]);
-            newPages.push(site.pages[pageIndex]);
-          } else {
-            var page = new Page(site,site.contentData.pages[i]);
-            newPages.push(page);
-          }
-          i = counter;
+  var contentUpdateCheck = setInterval(function() {
+    if (site.renderedOnce && !site.contentUpdatExists) {
+      if (!site.updateResolutionLoading && !site.currentContentDataVersionLoaded) {
+        site.setUpdateResolutionLoading(true);
+        $.ajax({url: site.versionURL, success: function() {
+          console.log('SITE: Returning data from ' + site.versionURL);
+        }, error: function() {
+          console.log('SITE: Failure when attempting to retrieve data from ' + site.versionURL);
+        }}).done(function(data) {
+          site.setCurrentVersion(data.toString());
+          site.setCurrentContentDataVersionLoaded(true);
+          site.setUpdateResolutionLoading(false);
+        });
+      } else if (site.currentContentDataVersionLoaded && !site.contentUpdateCheckResolved) {
+        if (site.currentVersion.toString() !== site.contentDataVersion.toString()) {
+          console.log('SITE: Check For Content Update: Content version change detected.');
+          site.setContentUpdateExists(true);
+          site.setContentUpdateCheckResolved(true);
+        } else {
+          console.log('SITE: Check For Content Update: No content version change.');
+          site.setContentUpdateCheckResolved(true);
         }
-        site.pages = newPages;
       }
     }
-  },5000);
-  window.setInterval(function() {
+  },60000);
+  var updateContent = setInterval(function() {
+    if (site.renderedOnce && site.contentUpdateCheckResolved) {
+      if (site.contentUpdateExists) {
+        site.contentDataVersion = site.currentVersion;
+        localStorage.setItem('contentDataVersion',site.contentDataVersion);
+        if (!site.updateLoading && !site.updateContentDataLoaded) {
+          site.setUpdateLoading(true);
+          $.ajax({url: site.contentURL, dataType: 'json', success: function() {
+            console.log('SITE: Returning JSON data from ' + site.contentURL);
+          }, error: function() {
+            console.log('SITE: Failure when attempting to retrieve JSON data from ' + site.contentURL);
+          }}).done(function(data) {
+            site.setContentData(data);
+            site.setUpdateContentDataLoaded(true);
+            console.log('SITE: Updated content data loaded successfully.  Proceeding to load the updated social media links data.');
+            site.setUpdateLoading(false);
+          });
+        } else if (!site.updateLoading && !site.updateSocialDataLoaded) {
+          site.setUpdateLoading(true);
+          $.ajax({url: site.socialURL, dataType: 'json', success: function() {
+            console.log('SITE: Returning JSON data from ' + site.socialURL);
+          }, error: function() {
+            console.log('SITE: Failure when attempting to retrieve JSON data from ' + site.socialURL);
+          }}).done(function(data) {
+            site.setSocialData(data);
+            site.setUpdateSocialDataLoaded(true);
+            console.log('SITE: Updated social media links\' data loaded successfully.');
+            site.setUpdateLoading(false);
+          });
+        } else if (!site.updateLoading && site.updateContentDataLoaded && site.updateSocialDataLoaded) {
+          site.setUpdateLoading(true);
+          console.log('SITE: Updated content and social media links\' data loaded successfully.  Proceeding to update the view.');
+          site.navigation.updateSocialLinks(site.socialData);
+          var newPages = [];
+          for (i = 0; i < site.contentData.pages.length; i++) {
+            var counter = i;
+            var pageHasBeenMade = false;
+            var pageIndex = '';
+            for (j = 0; j < site.pages.length; j++) {
+              if (site.pages[j].pageId.toString() === site.contentData.pages[i].id.toString()) {
+                pageHasBeenMade = true;
+                pageIndex = j;
+              }
+            }
+            if (pageHasBeenMade) {
+              site.pages[pageIndex].generatePage(site.contentData.pages[i]);
+              newPages.push(site.pages[pageIndex]);
+            } else {
+              var page = new Page(site,site.contentData.pages[i]);
+              newPages.push(page);
+            }
+            i = counter;
+          }
+          site.pages = newPages;
+          console.log('SITE: Updated the view with new content and social media link\'s data successfully.');
+          site.setContentUpdateCheckResolved(false);
+          site.setCurrentContentDataVersionLoaded(false);
+          site.setContentUpdateExists(false);
+          site.setUpdateContentDataLoaded(false);
+          site.setUpdateSocialDataLoaded(false);
+          site.setUpdateLoading(false);
+        }
+      } else if (!site.contentUpdateExists && site.contentUpdateCheckResolved) {
+        site.setContentUpdateCheckResolved(false);
+        site.setCurrentContentDataVersionLoaded(false);
+        site.setContentUpdateCheckResolved(false);
+        site.setCurrentContentDataVersionLoaded(false);
+        site.setContentUpdateExists(false);
+        site.setUpdateContentDataLoaded(false);
+        site.setUpdateSocialDataLoaded(false);
+        site.setUpdateLoading(false);
+      }
+    }
+  },60000);
+  var updateAddressBarURL = setInterval(function() {
     site.currentPage = window.location.href;
     var hashId = site.currentPage.lastIndexOf('#');
     if (hashId === -1) {
@@ -125,10 +344,25 @@ Site.prototype.changePage = function() {
     } else {
       var pageTitle = window.location.href.substring(hashIndex,window.location.href.length);
       var subPageTitle = '';
+      var filterValue = '';
+      var filterType = '';
       if (pageTitle.indexOf('-') > -1) {
-        subPageTitle = pageTitle.substring((pageTitle.indexOf('-') + 1),pageTitle.length);
+        if (pageTitle.indexOf('+') > -1)
+        {
+          subPageTitle = pageTitle.substring((pageTitle.indexOf('-') + 1),pageTitle.length);
+          filterValue = subPageTitle.substring((subPageTitle.indexOf('=') + 1),subPageTitle.length);
+          filterType = pageTitle.substring((pageTitle.indexOf('+') + 1),pageTitle.indexOf('='));
+          subPageTitle = subPageTitle.substring(0,plusIndex);
+        } else {
+          subPageTitle = pageTitle.substring((pageTitle.indexOf('-') + 1),pageTitle.length);
+        }
         pageTitle = pageTitle.substring(0,pageTitle.indexOf('-'));
+      } else if (pageTitle.indexOf('+') > -1) {
+        filterValue = pageTitle.substring((pageTitle.indexOf('=') + 1),pageTitle.length);
+        filterType = pageTitle.substring((pageTitle.indexOf('+') + 1),pageTitle.indexOf('='));
+        pageTitle = pageTitle.substring(0,pageTitle.indexOf('+'));
       }
+      filterValue = filterValue.replace(/_/g,' ');
       $('main').children().hide();
       if ($((pageTitle + '-container')).length) {
         if (subPageTitle === '') {
@@ -151,8 +385,32 @@ Site.prototype.changePage = function() {
         }
         $('.filters').hide();
         $((pageTitle + ' .filters')).show();
-        $((pageTitle + ' .author-filter .filter-select')).val('All Authors');
-        $((pageTitle + ' .category-filter .filter-select')).val('All Categories');
+        if (filterType === 'Author') {
+          $((pageTitle + ' .author-filter .filter-select')).val(filterValue);
+          $((pageTitle + '-container article')).each(function() {
+            var articleAuthor = $(this).find('.article-author').text();
+            if (articleAuthor !== filterValue) {
+              $((pageTitle + '-container')).find('article .article-content :not(:first-child)').hide();
+              $((pageTitle + '-container')).find('.read-more').show();
+              $(this).hide();
+            }
+          });
+        } else {
+          $((pageTitle + ' .author-filter .filter-select')).val('All Authors');
+        }
+        if (filterType === 'Category') {
+          $((pageTitle + ' .category-filter .filter-select')).val(filterValue);
+          $((pageTitle + '-container article')).each(function() {
+            var articleCategory = $(this).find('.article-category').text();
+            if (articleCategory !== filterValue) {
+              $((pageTitle + '-container')).find('article .article-content :not(:first-child)').hide();
+              $((pageTitle + '-container')).find('.read-more').show();
+              $(this).hide();
+            }
+          });
+        } else {
+          $((pageTitle + ' .category-filter .filter-select')).val('All Categories');
+        }
       } else {
         $('.filters').hide();
       }
@@ -189,6 +447,15 @@ Site.prototype.getCurrentPage = function() {
   }
   return this.currentPage;
 };
+Site.prototype.preView = function(siteTitle,show) {
+  if (show) {
+    $('#site-title a').text(siteTitle);
+    $('header').append('<img class="pre-loader" src="images/loader.gif" width="120" height="120"/>');
+    $('.pre-loader').css('margin-left',((($('html').width() / 2) - 12.5) + 'px'));
+  } else if (!show) {
+    $('.pre-loader').remove();
+  }
+};
 /* The Navigation Object */
 var Navigation = function(socialData,siteTemplates) {
   this.model(siteTemplates);
@@ -208,7 +475,7 @@ Navigation.prototype.view = function(socialData) {
 Navigation.prototype.controller = function() {
   var menuOffScreen = (-1 * ($('#mobile-menu').find('.site-menu').width())) - 5;
   $('#navigation').on('click','.hamburger-menu',function(event) {
-    event.preventDefault();
+    event.defaultPrevented;
     if ($('#mobile-menu').css('width') !== '0px') {
       $('#mobile-menu').find('.hamburger-menu').rotate({duration:500,angle: 90,animateTo:0});
       $('#mobile-menu').css('width','0px');
@@ -255,70 +522,68 @@ Navigation.prototype.updateSocialLinks = function(data) {
   $('.nav-social-link-item').remove();
   this.view(data);
 };
-/* The AjaxHandler Object */
-var AjaxHandler = function() {};
-AjaxHandler.prototype.getData = function(URL,ASYNC) {
-  var output = 'failure';
-  $.ajax({url: URL, success: function(result) {
-    console.log('Get Data: Returning data from ' + URL);
-    output = result.toString();
-  }, async: ASYNC, error: function() {
-    console.log('Get Data: Failure when attempting to retrieve data from ' + URL);
-  }});
-  return output;
-};
-AjaxHandler.prototype.getData2 = function(URL,ASYNC) {
-  $.ajax({url: URL, success: function(result) {
-    console.log('Get Data: Returning data from ' + URL);
-  }, async: ASYNC, error: function() {
-    console.log('Get Data: Failure when attempting to retrieve data from ' + URL);
-  }}).done(function(data) {
-    return data.toString();
-  });
-};
-AjaxHandler.prototype.getJSON = function(URL,ASYNC) {
-  var output = '';
-  $.ajax({url: URL, dataType:'json', success: function(result) {
-    console.log('Get JSON: Successfully retrieved data from ' + URL);
-    output = result;
-  }, async: ASYNC, error: function() {
-    console.log('Get JSON: Failure when attempting to retrieve JSON from ' + URL);
-  }});
-  return output;
-};
-AjaxHandler.prototype.getTemplate = function(template) {
-  var URL = ('data/templates/' + template + '.html');
-  var data = this.getData(URL,false);
-  var $template = $(data);
-  if (data !== '') {
-    console.log('Get Template: Successfully loaded the \'' + template + '\' template.');
-  } else {
-    console.log('Get Template: Failed to load the \'' + template + '\' template.');
-  }
-  return $template;
-};
-AjaxHandler.prototype.checkForContentUpdate = function(currentVersion,versionURL) {
-  console.log('Check For Content Update: Downloading the current content version to check for alteration.');
-  var version = this.getData(versionURL,false);
-  if (version.toString() !== currentVersion.toString()) {
-    console.log('Check For Content Update: Content version change detected.');
-    return true;
-  } else {
-    console.log('Check For Content Update: No content version change.');
-    return false;
-  }
-};
 /* The Templates Object */
-var Templates = function(ajaxObj) {
+var Templates = function(site) {
+  site.dataLoading = true;
   this.templates = [];
-  this.templates['basic-articles'] = ajaxObj.getTemplate('basic-articles');
-  this.templates['author-articles'] = ajaxObj.getTemplate('author-articles');
-  this.templates['basic-article-filters'] = ajaxObj.getTemplate('basic-article-filters');
-  this.templates['basic-page'] = ajaxObj.getTemplate('basic-page');
-  this.templates['reference-page'] = ajaxObj.getTemplate('reference-page');
-  this.templates['navigation-link'] = ajaxObj.getTemplate('navigation-link');
-  this.templates['navigation-social-link'] = ajaxObj.getTemplate('navigation-social-link');
-  this.templates['author-statistic'] = ajaxObj.getTemplate('author-statistic');
+  this.templates.push('basic-articles');
+  this.templates.push('author-articles');
+  this.templates.push('basic-article-filters');
+  this.templates.push('basic-page');
+  this.templates.push('reference-page');
+  this.templates.push('navigation-link');
+  this.templates.push('navigation-social-link');
+  this.templates.push('author-statistic');
+  this.templates.push('github-about');
+  for (i = 0; i < this.templates.length; i++) {
+    this.templates[this.templates[i]] = 'NULL';
+  }
+  var that = this;
+  var templateLoading = false;
+  var templateCounter = 0;
+  var loader = setInterval(function() {
+    if ((!templateLoading) && (templateCounter < that.templates.length)) {
+      templateLoading = true;
+      var URL = ('data/templates/' + that.templates[templateCounter] + '.html');
+      var template = that.templates[templateCounter];
+      $.ajax({url: URL, success: function() {
+        console.log('TEMPLATES: Returning data from ' + URL);
+      }, error: function() {
+        console.log('TEMPLATES: Failure when attempting to retrieve data from ' + URL);
+      }}).done(function(data) {
+        that.setTemplate(template,data.toString());
+        templateCounter++;
+        templateLoading = false;
+      });
+    } else if (templateCounter === that.templates.length) {
+      console.log('TEMPLATES: Templates\' data has been fully loaded via Ajax.');
+      clearInterval(loader);
+    }
+  },10);
+  this.loaded = false;
+  that = this;
+  var loading = setInterval(function() {
+    var load = true;
+    console.log('TEMPLATES: Starting Template Load Check Loop');
+    for (i = 0; i < that.templates.length; i++) {
+      if (that.templates[that.templates[i]] === 'NULL') {
+        console.log('TEMPLATES: ' + that.templates[i] + ' template not loaded.');
+        load = false;
+      }
+    }
+    if (load) {
+      console.log('TEMPLATES: Templates successfully loaded and ready for manipulation.');
+      that.isLoaded();
+      site.dataLoading = false;
+      clearInterval(loading);
+    }
+  },10);
+};
+Templates.prototype.setTemplate = function(template,data) {
+  this.templates[template] = $(data);
+};
+Templates.prototype.isLoaded = function () {
+  this.loaded = true;
 };
 Templates.prototype.getTemplate = function(template) {
   return this.templates[template];
@@ -327,6 +592,17 @@ Templates.prototype.renderTemplate = function($template,context) {
   var handlebarTemplate = Handlebars.compile($template.html());
   return $(handlebarTemplate(context));
 };
+/* The GitHub Account Object - includes repos data.*/
+var GithubAccount = function(accountData,repoData) {
+  this.model(accountData,repoData);
+  this.view();
+  this.controller();
+};
+GithubAccount.prototype.model = function(accountData,repoData) {
+  this.data = {'account':accountData,'repos':repoData};
+};
+GithubAccount.prototype.view = function() {};
+GithubAccount.prototype.controller = function() {};
 /* The Page Object */
 var Page = function(pageSite,pageData) {
   this.model(pageSite,pageData);
@@ -341,6 +617,8 @@ Page.prototype.model = function(pageSite,pageData) {
   this.displayStates = [];
   if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     this.contentData = this.setupArticleData();
+  } else if (this.pageType === 'github-about') {
+    this.setupGithubAboutInformation();
   }
   this.hasBeenRendered = false;
 };
@@ -349,6 +627,12 @@ Page.prototype.view = function() {
 };
 Page.prototype.controller = function() {
   this.site.pages.push(this);
+};
+Page.prototype.setupGithubAboutInformation = function() {
+  this.contentData.author = this.site.githubAccount.data.account.author;
+  this.contentData.authorUrl = this.site.githubAccount.data.account.authorUrl;
+  this.contentData.publicRepoCount = this.site.githubAccount.data.account.publicRepoCount;
+  this.contentData.repos = this.site.githubAccount.data.repos;
 };
 Page.prototype.setupArticleData = function() {
   var currentDate = new Date();
@@ -411,6 +695,7 @@ Page.prototype.renderPage = function() {
   this.$obj = this.site.templates.getTemplate(this.pageType);
   this.$obj = this.site.templates.renderTemplate(this.$obj,this.contentData);
   $('main').find(elementId).remove();
+  this.$obj.hide();
   $('main').append(this.$obj);
 };
 Page.prototype.renderNavItem = function() {
@@ -490,8 +775,10 @@ Page.prototype.renderArticleFilters = function() {
     });
     $articleFilters = this.site.templates.renderTemplate($articleFilters,filterData);
     if ($('#mobile-menu').css('display') === 'none') {
+      $articleFilters.hide();
       $articleFilters.appendTo('#desktop-menu nav');
     } else {
+      $articleFilters.hide();
       $articleFilters.appendTo('header');
     }
     if (this.pageType === 'author-articles') {
@@ -512,8 +799,10 @@ Page.prototype.generatePage = function(pageData) {
   $(('.page-' + this.pageId)).remove();
   this.contentData = pageData;
   this.pageType = this.contentData.type;
-  if(this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
+  if (this.pageType === 'basic-articles' || this.pageType === 'author-articles') {
     this.contentData = this.setupArticleData();
+  } else if (this.pageType === 'github-about') {
+    this.setupGithubAboutInformation();
   }
   this.renderPage();
   this.renderNavItem();
@@ -633,32 +922,46 @@ Page.prototype.resetPageActions = function() {
     });
     $filters.find('.author-filter').on('change',function() {
       $filters.find('.category-filter .filter-select').val('All Categories');
-      $articles.show();
       var selection = $filters.find('.author-filter option:selected').attr('value');
+      var newURL = window.location.href;
       if (selection !== 'All Authors') {
-        $articles.each(function() {
-          var articleAuthor = $(this).find('.article-author').text();
-          if (articleAuthor !== selection) {
-            $articleContainer.find('article .article-content :not(:first-child)').hide();
-            $articleContainer.find('.read-more').show();
-            $(this).hide();
-          }
-        });
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL + '+Author=' + selection.replace(/ /g,'_');
+      } else {
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL;
       }
     });
     $filters.find('.category-filter').on('change',function() {
       $filters.find('.author-filter .filter-select').val('All Authors');
-      $articles.show();
       var selection = $filters.find('.category-filter option:selected').attr('value');
+      var newURL = window.location.href;
       if (selection !== 'All Categories') {
-        $articles.each(function() {
-          var articleCategory = $(this).find('.article-category span').text();
-          if (articleCategory !== selection) {
-            $articleContainer.find('article .article-content :not(:first-child)').hide();
-            $articleContainer.find('.read-more').show();
-            $(this).hide();
-          }
-        });
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL + '+Category=' + selection.replace(/ /g,'_');
+      } else {
+        if (newURL.indexOf('-') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('-'));
+        }
+        if (newURL.indexOf('+') > -1) {
+          newURL = newURL.substring(0,newURL.indexOf('+'));
+        }
+        window.location.href = newURL;
       }
     });
   }
